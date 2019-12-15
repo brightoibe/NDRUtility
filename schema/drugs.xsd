@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<xs:schema version="1.0"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+    <xs:element name="drug">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="patient_id" type="xs:int"/>
+                <xs:element name="encounter_id" type="xs:int"/>
+                <xs:element name="form_id" type="xs:int"/>
+                <xs:element name="provider_id" type="xs:int"/>
+                <xs:element name="creator_id" type="xs:int"/>
+                <xs:element name="location_id" type="xs:int"/>
+                <xs:element name="location" type="xs:string"/>
+                <xs:element name="pepfar_id" type="xs:string"/>
+                <xs:element name="hosp_id" type="xs:string"/>
+                <xs:element name="pmm_form" type="xs:string"/>
+                <xs:element name="dispensed_date" type="xs:date"/>
+                <xs:element name="dispensed_by" type="xs:string"/>
+                <xs:element name="entered_by" type="xs:string"/>
+                <xs:element name="date_entered" type="xs:date"/>
+                <xs:element name="drug_name" type="xs:string"/>
+                <xs:element name="concept_id" type="xs:int"/>
+                <xs:element name="strength" type="xs:string"/>
+                <xs:element name="other_strength" type="xs:string"/>
+                <xs:element name="single_dose_value" type="xs:decimal"/>
+                <xs:element name="single_dose_unit" type="xs:string"/>
+                <xs:element name="frequency" type="xs:string"/>
+                <xs:element name="duration" type="xs:int"/>
+                <xs:element name="duration_unit" type="xs:string"/>
+                <xs:element name="quantity_prescribed" type="xs:int"/>
+                <xs:element name="quantity_prescribed_unit" type="xs:string"/>
+                <xs:element name="quantity_dispensed" type="xs:int"/>
+                <xs:element name="quantity_dispensed_unit" type="xs:string"/>
+                <xs:element name="uuid" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

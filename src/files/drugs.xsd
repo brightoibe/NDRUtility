@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<xs:schema version="1.0"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+    <xs:element name="drug">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="patient_id" type="xs:integer"/>
+                <xs:element name="encounter_id" type="xs:integer"/>
+                <xs:element name="form_id" type="xs:integer"/>
+                <xs:element name="provider_id" type="xs:integer"/>
+                <xs:element name="creator_id" type="xs:integer"/>
+                <xs:element name="location_id" type="xs:integer"/>
+                <xs:element name="location" type="xs:string"/>
+                <xs:element name="provider" type="xs:string"/>
+                <xs:element name="pepfar_id" type="xs:string"/>
+                <xs:element name="hosp_id" type="xs:string"/>
+                <xs:element name="pmmForm" type="xs:string"/>
+                <xs:element name="dispensedDate" type="xs:date"/>
+                <xs:element name="dispensedBy" type="xs:string"/>
+                <xs:element name="enteredBy" type="xs:string"/>
+                <xs:element name="dateEntered" type="xs:date"/>
+                <xs:element name="visitType" type="xs:string"/>
+                <xs:element name="regimenLine" type="xs:string"/>
+                <xs:element name="firstLine" type="xs:string"/>
+                <xs:element name="secondLine" type="xs:string"/>
+                <xs:element name="otherRegimen" type="xs:string"/>
+                <xs:element name="treatmentType" type="xs:string"/>
+                <xs:element name="pickupReason" type="xs:string"/>
+                <xs:element name="drugName" type="xs:string"/>
+                <xs:element name="drugStrength" type="xs:string"/>
+                <xs:element name="otherDrugStrength" type="xs:string"/>
+                <xs:element name="singleDosePrescription" type="xs:string"/>
+                 <xs:element name="singleDoseUnit" type="xs:string"/>
+                <xs:element name="drugFrequency" type="xs:string"/>
+                <xs:element name="drugDurationValue" type="xs:integer"/>
+                <xs:element name="drugDurationUnit" type="xs:string"/>
+                <xs:element name="drugQuantityPrescribedValue" type="xs:integer"/>
+                <xs:element name="drugQuantityPrescribedUnit" type="xs:string"/>
+                <xs:element name="orderedBy" type="xs:string"/>
+                <xs:element name="dateOrdered" type="xs:date"/>
+                <xs:element name="counseledBy" type="xs:string"/>
+                <xs:element name="dateCounseled" type="xs:date"/>
+                <xs:element name="pickupBy" type="xs:string"/>
+                <xs:element name="nameOfErrorDrug" type="xs:string"/>
+                <xs:element name="nameOfErrorPrescription" type="xs:string"/> 
+                <xs:element name="consequenceOfPrescriptionError" type="xs:string"/>
+                <xs:element name="uuid" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

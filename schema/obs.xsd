@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<xs:schema version="1.0"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+<xs:element name="obs">
+        <xs:complexType>
+            <xs:sequence>
+                 <xs:element name="OBS_ID" type="xs:int"/>
+                 <xs:element name="PATIENT_ID" type="xs:int"/>
+                 <xs:element name="ENCOUNTER_ID" type="xs:int"/>
+                 <xs:element name="PEPFAR_ID" type="xs:string"/>
+                 <xs:element name="HOSP_ID" type="xs:string"/>
+                 <xs:element name="VISIT_DATE" type="xs:date"/>
+                 <xs:element name="PMM_FORM" type="xs:string"/>
+                 <xs:element name="CONCEPT_ID" type="xs:int"/>
+                 <xs:element name="VARIABLE_NAME" type="xs:string"/>
+                 <xs:element name="VARIABLE_VALUE" type="xs:string"/>
+                 <xs:element name="ENTERED_BY" type="xs:string"/>
+                 <xs:element name="DATE_CREATED" type="xs:date"/>
+                 <xs:element name="DATE_CHANGED" type="xs:date"/>
+                 <xs:element name="PROVIDER" type="xs:string"/>
+                 <xs:element name="UUID" type="xs:string"/>
+                 <xs:element name="LOCATION" type="xs:string"/>
+                 <xs:element name="LOCATION_ID" type="xs:int"/>
+                 <xs:element name="CREATOR_ID" type="xs:int"/>
+                 <xs:element name="PROVIDER_ID" type="xs:int"/>
+                 <xs:element name="VALUE_NUMERIC" type="xs:decimal"/>
+                 <xs:element name="VALUE_DATETIME" type="xs:date"/>
+                 <xs:element name="VALUE_CODED" type="xs:int"/>
+                 <xs:element name="VALUE_TEXT" type="xs:string"/>
+                 <xs:element name="VALUE_BOOL" type="xs:boolean"/>
+                 <xs:element name="OBS_GROUP_ID" type="xs:int"/>
+                 <xs:element name="VOIDED" type="xs:int"/>
+                 <xs:element name="DATE_VOIDED" type="xs:date"/>
+                 <xs:element name="VOIDED_BY" type="xs:int"/>
+                 <xs:element name="CHANGED_BY" type="xs:int"/>
+                 <xs:element name="FORM_ID" type="xs:int"/>
+            </xs:sequence>
+        </xs:complexType>
+</xs:element>
+</xs:schema>

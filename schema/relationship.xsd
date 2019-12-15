@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<xs:schema version="1.0"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+    <xs:element name="relationship">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="relationship_id" type="xs:int"/>
+                <xs:element name="person_a_name" type="xs:string"/>
+                <xs:element name="person_b_name" type="xs:string"/>
+                <xs:element name="a_is_to_b" type="xs:string"/> 
+                <xs:element name="b_is_to_a" type="xs:string"/>
+                <xs:element name="entered_by" type="xs:string"/>
+                <xs:element name="date_entered" type="xs:date"/>
+                <xs:element name="person_a_id" type="xs:int"/>
+                <xs:element name="person_b_id" type="xs:int"/>
+                <xs:element name="relationship_type_id" type="xs:int"/>
+                <xs:element name="creator_id" type="xs:int"/>
+                <xs:element name="voided" type="xs:int"/>
+                <xs:element name="voided_by" type="xs:int"/>
+                <xs:element name="date_voided" type="xs:date"/>
+                <xs:element name="uuid" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

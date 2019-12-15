@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<xs:schema version="1.0"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+    <xs:element name="patient">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="person_source_pk" type="xs:integer"/>
+                <xs:element name="person_uuid" type="xs:string"/>
+                <xs:element name="pepfar_id" type="xs:string"/>
+                <xs:element name="hosp_id" type="xs:string"/>
+                <xs:element name="ehnid" type="xs:string"/>
+                <xs:element name="other_id" type="xs:string"/>
+                <xs:element name="first_name" type="xs:string"/>
+                <xs:element name="last_name" type="xs:string"/>
+                <xs:element name="middle_name" type="xs:string"/>
+                <xs:element name="adult_enrollment_dt" type="xs:date" nillable="true"/>
+                <xs:element name="pead_enrollment_dt" type="xs:date" nillable="true"/>
+                <xs:element name="pmtct_enrollment_dt" type="xs:date" nillable="true"/>
+                <xs:element name="hei_enrollment_dt" type="xs:date" nillable="true"/>
+                <xs:element name="pep_enrollment_dt" type="xs:date" nillable="true"/>
+                <xs:element name="dob" type="xs:date"/>
+                <xs:element name="age" type="xs:integer"/>
+                <xs:element name="gender" type="xs:string"/>
+                <xs:element name="address1" type="xs:string"/>
+                <xs:element name="address2" type="xs:string"/>
+                <xs:element name="address_lga" type="xs:string"/>
+                <xs:element name="address_state" type="xs:string"/>
+                <xs:element name="creator_id" type="xs:integer"/>
+                <xs:element name="date_created" type="xs:date" nillable="true"/>
+                <xs:element name="location_id" type="xs:integer"/>
+                <xs:element name="creator" type="xs:string"/>
+                <xs:element name="location" type="xs:string"/>
+                <xs:element name="date_changed" type="xs:date" nillable="true"/>
+            </xs:sequence>
+        </xs:complexType>
+     </xs:element>
+
+</xs:schema>

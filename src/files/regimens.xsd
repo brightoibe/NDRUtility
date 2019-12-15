@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+
+<xs:schema version="1.0"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+    <xs:element name="regimen">
+        <xs:complexType>
+            <xs:sequence>
+                 <xs:element name="location_id" type="xs:integer"/>
+                 <xs:element name="patient_id" type="xs:integer"/>
+                 <xs:element name="form_id" type="xs:integer"/>
+                 <xs:element name="encounter_id" type="xs:integer"/>
+                 <xs:element name="creator_id" type="xs:integer"/>
+                 <xs:element name="provider_id" type="xs:integer"/>
+                 <xs:element name="uuid" type="xs:string"/>
+                 <xs:element name="pepfar_id" type="xs:string"/>
+                 <xs:element name="hosp_id" type="xs:string"/>
+                 <xs:element name="visit_date" type="xs:date"/>
+                 <xs:element name="location" type="xs:string"/>
+                 <xs:element name="pmm_form" type="xs:string"/>
+                 <xs:element name="visit_type" type="xs:string"/>
+                 <xs:element name="regimen_line" type="xs:string"/>
+                 <xs:element name="first_line" type="xs:string"/>
+                 <xs:element name="second_line" type="xs:string"/>
+                 <xs:element name="regimen_code" type="xs:integer"/>
+                 <xs:element name="other_regimen" type="xs:string"/>
+                 <xs:element name="entered_by" type="xs:string"/>
+                 <xs:element name="date_entered" type="xs:date"/>
+                 <xs:element name="provider" type="xs:string"/>
+                 <xs:element name="date_changed" type="xs:date"/>
+           </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
