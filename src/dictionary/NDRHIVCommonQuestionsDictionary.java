@@ -17,11 +17,12 @@ import model.datapump.Obs;
  * @author The Bright
  */
 public class NDRHIVCommonQuestionsDictionary {
-    
-     public NDRHIVCommonQuestionsDictionary(){
-         
-     }
-     public CommonQuestionsType createCommonQuestionType(String hospID, List<Obs> obsList, Date firstVisitDate, Date lastVisitDate, boolean patientdiedfromillness, int age, String gender) throws DatatypeConfigurationException {
+
+    public NDRHIVCommonQuestionsDictionary() {
+
+    }
+
+    public CommonQuestionsType createCommonQuestionType(String hospID, List<Obs> obsList, Date firstVisitDate, Date lastVisitDate, boolean patientdiedfromillness, int age, String gender) throws DatatypeConfigurationException {
         CommonQuestionsType common = new CommonQuestionsType();
         common.setPatientDieFromThisIllness(patientdiedfromillness);
         common.setPatientAge(age);
@@ -38,20 +39,17 @@ public class NDRHIVCommonQuestionsDictionary {
         for (Obs obs : obsList) {
             conceptID = obs.getConceptID();
             switch (conceptID) {
-                case 165050:
+                case 7778688:
                     value_coded = obs.getValueCoded();
                     if (gender.equals("F")) {
                         switch (value_coded) {
-                            case 165048:
+                            case 47:
                                 common.setPatientPregnancyStatusCode("P");
                                 break;
-                            case 165047:
+                            case 7777870:
                                 common.setPatientPregnancyStatusCode("NP");
                                 break;
-                            /*case 13:
-                                common.setPatientPregnancyStatusCode("NK");
-                                break;*/
-                            case 165049:
+                            case 7778546:
                                 common.setPatientPregnancyStatusCode("PMTCT");
                                 break;
                             default:
@@ -59,19 +57,37 @@ public class NDRHIVCommonQuestionsDictionary {
                         }
                     }
                     break;
-                case 5596:
+                case 575:
+                    value_coded = obs.getValueCoded();
+                    if (gender.equals("F")) {
+                        switch (value_coded) {
+                            case 80:
+                                common.setPatientPregnancyStatusCode("P");
+                                break;
+                            case 81:
+                                common.setPatientPregnancyStatusCode("NP");
+                                break;
+                            case 13:
+                                common.setPatientPregnancyStatusCode("NK");
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    break;
+                case 577:
                     value_datetime = obs.getValueDate();
                     if (gender.equals("F")) {
                         common.setEstimatedDeliveryDate(getXmlDate(value_datetime));
                     }
                     break;
-                case 160554:
+                case 859:
                     value_datetime = obs.getValueDate();
                     common.setDiagnosisDate(getXmlDate(value_datetime));
                     break;
-                case 165470:
+                case 7778447:
                     value_coded = obs.getValueCoded();
-                    if (value_coded == 165889) {
+                    if (value_coded == 80) {
                         common.setPatientDieFromThisIllness(true);
                     }
                     break;

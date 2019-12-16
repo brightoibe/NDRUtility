@@ -34,7 +34,8 @@ public class NDRPharmacyDictionary {
 
     private Map<String, String> mapRegimenToCodeDictionary = new HashMap<String, String>();
     private Map<String, String> localDrugCodeMapping = new HashMap<String, String>();
-    private Map<Integer, String> ndrCodedValues = new HashMap<Integer, String>();
+    private Map<String, String> arvDrugCodingMapping=new HashMap<String,String>();
+    public Map<Integer, String> ndrCodedValues = new HashMap<Integer, String>();
 
     public NDRPharmacyDictionary() {
         loadDictionaries();
@@ -44,6 +45,7 @@ public class NDRPharmacyDictionary {
         loadNDRCodedValues();
         loadLocalCodingDictionary();
         loadRegimenToCodeDictionary();
+        loadARVDrugCoding();
     }
 
     private void loadNDRCodedValues() {
@@ -66,7 +68,25 @@ public class NDRPharmacyDictionary {
         //ndrCodedValues.put(	,TB);
 
     }
-
+    public void loadARVDrugCoding(){
+        arvDrugCodingMapping.put("NEVIRAPINE", "NVP");
+        arvDrugCodingMapping.put("LAMIVUDINE", "3TC");
+        arvDrugCodingMapping.put("ABACAVIR", "ABC");
+        arvDrugCodingMapping.put("ZIDOVUDINE", "AZT");
+        arvDrugCodingMapping.put("INDINAVIR", "IDVr");
+        arvDrugCodingMapping.put("NELFINAVIR", "NFVr");
+        arvDrugCodingMapping.put("RITONAVIR", "r");
+        arvDrugCodingMapping.put("EFAVIRENZ", "EFV");
+        arvDrugCodingMapping.put("TENOFOVIR", "TDF");
+        arvDrugCodingMapping.put("ATAZANAVIR","ATVr");
+        arvDrugCodingMapping.put("KALETRA", "LPVr");
+        arvDrugCodingMapping.put("LOPINAVIR", "LPVr");
+        arvDrugCodingMapping.put("EMTRICITABINE", "FTC");
+        arvDrugCodingMapping.put("DIDANOSINE", "DDI");
+        arvDrugCodingMapping.put("STAVUDINE","D4T");
+        arvDrugCodingMapping.put("SAQUINAVIR", "SQVr");
+        
+    }
     public void loadLocalCodingDictionary() {
         localDrugCodeMapping = new HashMap<String, String>();
         localDrugCodeMapping.put("ACTION MEAL PRESCRIBED", "ACM");
@@ -162,7 +182,111 @@ public class NDRPharmacyDictionary {
         }
         return regimen;
     }
+    public String codeDrugs(String drugName) {
+        drugName = drugName.toUpperCase();
+        String codedName = drugName;
+        Set<String> keySet=null;
+        if (drugName != null && !drugName.isEmpty()) {
+            keySet=arvDrugCodingMapping.keySet();
+            for(String key: keySet){
+                codedName=StringUtils.replacePattern(codedName, key, arvDrugCodingMapping.get(key));
+            }
+            /*if (drugName.contains("NEVIRAPINE")) {
+                codedName += "NVP/";
+            }
+            if (drugName.contains("LAMIVUDINE")) {
+                codedName += "3TC/";
+            }
+            if (drugName.contains("ZIDOVUDINE")) {
+                codedName += "AZT/";
+            }
+            if (drugName.contains("EMTRICITABINE")) {
+                codedName += "FTC/";
+            }
+            if (drugName.contains("TENOFOVIR")) {
+                codedName += "TDF/";
+            }
+            if (drugName.contains("EFAVIRENZ")) {
+                codedName += "EFV/";
+            }
+            if (drugName.contains("ABACAVIR")) {
+                codedName += "ABC/";
+            }
+            if (drugName.contains("ATAZANAVIR")) {
+                codedName += "ATVr/";
+            }
+            if (drugName.contains("KALETRA") || drugName.contains("LOPINAVIR")) {
+                codedName += "LPVr/";
+            }
+            if (drugName.contains("DIDANOSINE")) {
+                codedName += "DDI/";
+            }
+            if (drugName.contains("STAVUDINE")) {
+                codedName += "D4T/";
+            }
+            if (drugName.contains("SAQUINAVIR")) {
+                codedName += "SQVr/";
+            }
+            if (drugName.contains("INDINAVIR")) {
+                codedName += "IDVr/";
+            }
+            if (drugName.contains("NELFINAVIR")) {
+                codedName += "NFVr/";
+            }*/
+            if (codedName.endsWith("/")) {
+                codedName = codedName.substring(0, codedName.length() - 1);
+                
+            }
 
+        }
+        codedName=StringUtils.replacePattern(codedName,"\\s+", "");
+        return sortRegimen(codedName);
+    }
+
+    public boolean isPresent(String regimenList, String drugCode) {
+        boolean ans = false;
+        String[] drugs = regimenList.split("/");
+        if (containsAll(drugs, drugCode)) {
+            ans = true;
+        }
+        return ans;
+    }
+
+    
+    public String getRegimenLineCoding(String codedDrug) {
+        String line = "";
+        if (codedDrug.contains("LPVr") || codedDrug.contains("SQVr") || codedDrug.contains("IDVr") || codedDrug.contains("DDI") || codedDrug.contains("ATVr")) {
+            line = "20";
+        } else {
+            line = "10";
+        }
+        return line;
+    }
+
+    public boolean containsAll(String[] darr, String codedDrugNames) {
+        boolean ans = true;
+        for (String ele : darr) {
+            if (!codedDrugNames.contains(ele)) {
+                ans = false;
+            }
+        }
+        return ans;
+
+    }
+
+    public static String sortRegimen(String code) {
+        String[] codeArr = code.split("/");
+        Arrays.sort(codeArr);
+        return StringUtils.join(codeArr, "/");
+    }
+
+    public String convertDrugToRegimenCode(String drugName){
+        String regimenCoding="";
+        drugName =StringUtils.replacePattern(drugName,"\\/r", "r");
+        drugName = StringUtils.trimToEmpty(StringUtils.replacePattern(drugName, "\\(.*?\\)", ""));
+        regimenCoding=codeDrugs(drugName);
+        return regimenCoding;
+    }
     public String getRegimenCode(String regimen) {
         String code = null;
         Set<String> set = mapRegimenToCodeDictionary.keySet();

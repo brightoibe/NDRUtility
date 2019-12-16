@@ -836,7 +836,7 @@ public class DataPumpDao implements model.datapump.DataAccess {
 "from drug GROUP BY drug.patient_id,drug.dispensed_date) s1 on(s1.patient_id=regimen.patient_id and s1.dispensed_date=regimen.visit_date)\n" +
 "inner join (select regimen.patient_id,MIN(regimen.visit_date) as first_regimen_dt from regimen where regimen.first_line<>'' || regimen.second_line<>'' group by regimen.patient_id) s2\n" +
 "on(s2.patient_id=regimen.patient_id and s2.first_regimen_dt=regimen.visit_date)";*/
-        String sql_text = "select \n"
+ /*String sql_text = "select \n"
                 + "    `obs`.`obs_id`,\n"
                 + "    `obs`.`person_id`,\n"
                 + "    `obs`.`obs_datetime`,\n"
@@ -869,16 +869,56 @@ public class DataPumpDao implements model.datapump.DataAccess {
                 + "	DATE(MIN(obs.obs_datetime)) as date_obs\n"
                 + "     from obs where obs.voided=0 and obs.concept_id in(7778111,7778531) and obs.person_id in(" + buildString(idSet) + ") GROUP BY obs.person_id) \n"
                 + "	sinner on(sinner.person_id=obs.person_id and sinner.concept_id=obs.concept_id and DATE(encounter.encounter_datetime)=sinner.date_obs)\n"
-                + "	where obs.concept_id in(7778111,7778531) and encounter.patient_id in(" + buildString(idSet) + ") and encounter.voided=0 order by encounter.patient_id;";
-
+                + "	where obs.concept_id in(7778111,7778531) and encounter.patient_id in(" + buildString(idSet) + ") and encounter.voided=0 order by encounter.patient_id;";*/
+        String sql_text = "select \n"
+                + "orders.patient_id,\n"
+                + "pid1 .identifier as pepfar_id,\n"
+                + "pid2 .identifier as hosp_id,\n"
+                + " orders.start_date as visit_date,\n"
+                + " GROUP_CONCAT(drug.name SEPARATOR '/') as drug_name,\n"
+                + " orders.start_date as FirstPickupDate, \n"
+                + "orders.discontinued_date as stop_date, \n"
+                + "drug_order.frequency,\n"
+                + "drug_order.quantity,\n"
+                + "orders.date_created as date_entered,\n"
+                + "orders.creator as creator_id,\n"
+                + "drug_order.dose \n"
+                + "from orders\n"
+                + "left join drug_order on(drug_order.order_id=orders.order_id and orders.voided=0)\n"
+                + "left join drug on(drug.drug_id=drug_order.drug_inventory_id )\n"
+                + "left join patient_identifier pid1 on(orders.patient_id=pid1 .patient_id and pid1 .identifier_type=3)\n"
+                + "left join patient_identifier pid2 on(orders.patient_id=pid1 .patient_id and pid2 .identifier_type=6)\n"
+                + "left join (\n"
+                + " select orders.patient_id, MIN(orders.start_date) as firstRegimenDate from orders where \n"
+                + "orders.voided=0  and orders.concept_id \n"
+                + "IN (953,956,952,955,960,1186,959,1213,1187,\n"
+                + "1188,957,7777942,7778040,23,1184,1219,\n"
+                + "7778238,7778239,7777817,1211,7778240,\n"
+                + "7778159,1226,1224,1223,7778241,1232,\n"
+                + "1233,7778242,7778243,7778244,7778245,\n"
+                + "7778246,7778247,7777880,7777919,7777918,\n"
+                + "7777921,7777920,1225,1220,17,1222,7778502,\n"
+                + "7778503,1533,598,7778849,1191,7778830)\n"
+                + "GROUP BY orders.patient_id\n"
+                + ") as smin on(smin.patient_id=orders.patient_id and smin.firstRegimenDate=orders.start_date)\n"
+                + "where orders.voided=0   and orders.concept_id \n"
+                + "IN (953,956,952,955,960,1186,959,1213,1187,\n"
+                + "1188,957,7777942,7778040,23,1184,1219,\n"
+                + "7778238,7778239,7777817,1211,7778240,\n"
+                + "7778159,1226,1224,1223,7778241,1232,\n"
+                + "1233,7778242,7778243,7778244,7778245,\n"
+                + "7778246,7778247,7777880,7777919,7777918,\n"
+                + "7777921,7777920,1225,1220,17,1222,7778502,\n"
+                + "7778503,1533,598,7778849,1191,7778830) GROUP BY orders.patient_id,orders.start_date";
         int count = 0;
         Obs obs = null;
         ArrayList<Obs> obsList = null;
-        HashMap<Integer, ArrayList<Obs>> firstRegimenMap = new HashMap<Integer, ArrayList<Obs>>();
+        model.datapump.PatientRegimen ptsRegimen = null;
+        /*HashMap<Integer, ArrayList<Obs>> firstRegimenMap = new HashMap<Integer, ArrayList<Obs>>();
         for (Integer ele : idSet) {
             obsList = new ArrayList<Obs>();
             firstRegimenMap.put(ele, obsList);
-        }
+        }*/
         try {
             stmt = connection.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY,
                     java.sql.ResultSet.CONCUR_READ_ONLY);
@@ -889,9 +929,10 @@ public class DataPumpDao implements model.datapump.DataAccess {
             //rs = ps.executeQuery();
             while (rs.next()) {
                 //firstRegimenDictionary.put(rs.getInt("patient_id"), constructRegimen(rs));
-                obs = constructObs2(rs);
+                ptsRegimen = constructRegimen2(rs);//uctObs2(rs);
+                firstRegimenDictionary.put(ptsRegimen.getPatientID(),ptsRegimen);
                 //obsList.add(obs);
-                firstRegimenMap.get(obs.getPatientID()).add(obs);
+                //firstRegimenMap.get(obs.getPatientID()).add(obs);
                 screen.updateStatus("first regimens..." + count);
                 count++;
             }
@@ -904,7 +945,7 @@ public class DataPumpDao implements model.datapump.DataAccess {
         } finally {
             cleanUp(rs, stmt);
         }
-        PatientRegimen ptsRegimen = null;
+        /*PatientRegimen ptsRegimen = null;
         for (Integer id : idSet) {
             if (!firstRegimenMap.get(id).isEmpty()) {
                 ptsRegimen = extractPatientRegimen(firstRegimenMap.get(id), id);
@@ -914,7 +955,7 @@ public class DataPumpDao implements model.datapump.DataAccess {
 
             }
 
-        }
+        }*/
         //firstRegimenDictionary=firstRegimenMap;
     }
 
@@ -1153,15 +1194,15 @@ public class DataPumpDao implements model.datapump.DataAccess {
                     ipName = propertyMap.get("partner_full_name");
                     ipCode = propertyMap.get("partner_short_name");
                     container = NDRDictionary.createContainer(ipName, ipCode, "UPDATED");
-                    ptsBiometricInfo = getBiometricInfoForPatient(patientID);
-                    if (!ptsBiometricInfo.isEmpty()) {
-                        fingerPrintType = NDRDictionary.createFingerPrintType(ptsBiometricInfo);
-                    }
+                    //ptsBiometricInfo = getBiometricInfoForPatient(patientID);
+                    //if (!ptsBiometricInfo.isEmpty()) {
+                        //fingerPrintType = NDRDictionary.createFingerPrintType(ptsBiometricInfo);
+                    //}
                     individual = NDRDictionary.createIndividualReport();
                     ptsObsList = getCommonQuestionsForPatient(patientID, commonQuestionObsList);
                     obsList = getPersonalHistoryObs(pts.getPatientID(), loc.getLocationID());
                     patientDemographicType = NDRDictionary.createPatientDemographics(pts, loc, obsList, locMap);
-                    patientDemographicType.setFingerPrints(fingerPrintType);
+                    //patientDemographicType.setFingerPrints(fingerPrintType);
                     individual.setPatientDemographics(patientDemographicType);
                     conditionType = NDRDictionary.createConiditionTypeWithProgramArea(pts);
                     Boolean deaseased = patientDemographicType.isPatientDeceasedIndicator();
@@ -1932,7 +1973,7 @@ public class DataPumpDao implements model.datapump.DataAccess {
             //Date stopDate = null;
             while (rs.next()) {
                 obs = constructObs2(rs);
-                
+
                 obsList.add(obs);
                 //System.out.println("obs group id "+obs.getObsGroupID());
                 /*order = new model.datapump.PatientRegimen();
@@ -2023,7 +2064,7 @@ public class DataPumpDao implements model.datapump.DataAccess {
     public model.datapump.Obs getConceptForForm(int conceptID, int formID, List<model.datapump.Obs> obsList, Date visitDate) {
         model.datapump.Obs obs = null;
         for (model.datapump.Obs ele : obsList) {
-            if (ele.getConceptID() == conceptID && DateUtils.isSameDay(ele.getVisitDate(),visitDate) && ele.getFormID()==formID) {
+            if (ele.getConceptID() == conceptID && DateUtils.isSameDay(ele.getVisitDate(), visitDate) && ele.getFormID() == formID) {
                 obs = ele;
             }
         }
@@ -2037,10 +2078,10 @@ public class DataPumpDao implements model.datapump.DataAccess {
         for (model.datapump.Obs ele : obsList) {
             //t2=new DateTime(ele.getVisitDate());
             //if (ele.getConceptID() == conceptID && DateUtils.isSameDay(visitDate, ele.getVisitDate()) && ele.getObsGroupID() == obsID) {
-              if (ele.getConceptID() == conceptID && ele.getObsGroupID() == obsID) {  
-                 obs = ele;
-                 //System.out.println("Test Concept ID "+conceptID+" obs group id of ele: "+ele.getObsGroupID()+ " Concept ID: "+ele.getConceptID());
-              }
+            if (ele.getConceptID() == conceptID && ele.getObsGroupID() == obsID) {
+                obs = ele;
+                //System.out.println("Test Concept ID "+conceptID+" obs group id of ele: "+ele.getObsGroupID()+ " Concept ID: "+ele.getConceptID());
+            }
         }
         return obs;
     }
@@ -2568,7 +2609,7 @@ public class DataPumpDao implements model.datapump.DataAccess {
                      from the Obs List.
          */
         int obsGroupID = getObsIDOfConceptInList(165724, 27, obsList, visitDate);
-        System.out.println("Obs ID of ARV Medication: "+obsGroupID);
+        System.out.println("Obs ID of ARV Medication: " + obsGroupID);
         obsPin = getConceptForFormInGroup(159368, 27, obsList, visitDate, obsGroupID);
         //System.out.println("Prescribed regimen duration: "+obsPin.getValueNumeric());
         if (obsPin != null) {
@@ -3164,7 +3205,7 @@ public class DataPumpDao implements model.datapump.DataAccess {
                 + "	inner join `patient` on(`patient`.`patient_id` = `obs`.`person_id`)\n"
                 + "     inner join `encounter` on(`encounter`.`encounter_id` = `obs`.`encounter_id`)\n"
                 + "     inner join `encounter_provider` on(`encounter_provider`.encounter_id=encounter.encounter_id and encounter.voided=0)\n"
-                + "	where encounter.form_id in(22,23,20,13) and encounter.voided=0 and encounter.patient_id=? and encounter.encounter_datetime>'2001-01-01'"
+                + "	where encounter.form_id in(22,10,13,1,2,46,4) and encounter.voided=0 and encounter.patient_id=? and encounter.encounter_datetime>'2001-01-01'"
                 + "     GROUP BY encounter.patient_id,obs.concept_id order by encounter.date_created";
 
         PreparedStatement ps = null;
@@ -3192,7 +3233,7 @@ public class DataPumpDao implements model.datapump.DataAccess {
 
     public Date calculateStopDate(Date startDate, int duration, String unit) {
         Date stopDate = null;
-        int dayVal=calculateDayValue(duration, unit);
+        int dayVal = calculateDayValue(duration, unit);
         /*int dayVal = 30;
         if (StringUtils.isNotBlank(unit)) {
             if (StringUtils.equalsIgnoreCase(unit, "MONTH(S)")) {
@@ -3207,7 +3248,7 @@ public class DataPumpDao implements model.datapump.DataAccess {
                 //dayVal = 30;
             //}
         }*/
-        System.out.println("Days val: "+ dayVal);
+        System.out.println("Days val: " + dayVal);
         DateTime startDateTime = new DateTime(startDate);
         DateTime stopDateTime = startDateTime.plusDays(dayVal);
         stopDate = stopDateTime.toDate();
@@ -3469,13 +3510,7 @@ public class DataPumpDao implements model.datapump.DataAccess {
                 + "	inner join `patient` on(`patient`.`patient_id` = `obs`.`person_id`)\n"
                 + "     inner join `encounter` on(`encounter`.`encounter_id` = `obs`.`encounter_id`)\n"
                 + "     inner join `encounter_provider` on(encounter_provider.encounter_id=encounter.encounter_id and encounter_provider.voided=0 and encounter_provider.encounter_role_id=1)\n"
-                + "     inner join (select \n"
-                + "	obs.person_id,\n"
-                + "	obs.concept_id,\n"
-                + "	MAX(obs.obs_datetime) as date_obs\n"
-                + "     from obs where obs.voided=0 and obs.concept_id in(160554,165050,5596) GROUP BY obs.person_id, obs.concept_id) \n"
-                + "	sinner on(sinner.person_id=obs.person_id and sinner.concept_id=obs.concept_id and encounter.encounter_datetime=sinner.date_obs)\n"
-                + "	where obs.concept_id in(160554,165050,5596) and obs.voided=0 and obs.person_id in(" + buildString(idSet) + ") order by obs.person_id";
+                + "	where encounter.form_id in(22,10,13,1,2,46,4) and obs.voided=0 and obs.person_id in(" + buildString(idSet) + ") order by obs.person_id";
 
         Statement stmt = null;
         ResultSet rs = null;
@@ -4064,6 +4099,32 @@ public class DataPumpDao implements model.datapump.DataAccess {
         order.setRegimenName(rs.getString("regimen"));
         order.setCode(String.valueOf(rs.getInt("regimen_code")));
         order.setRegimenLine(rs.getString("regimen_line"));
+        order.setEnteredBy(rs.getString("entered_by"));
+        order.setDateEntered(rs.getDate("date_entered"));
+        order.setCreator(rs.getInt("creator_id"));
+        return order;
+    }
+
+    public model.datapump.PatientRegimen constructRegimen2(ResultSet rs) throws SQLException {
+        model.datapump.PatientRegimen order = new model.datapump.PatientRegimen();
+        int duration = 0;
+        String duration_unit = "";
+        Date stopDate = null;
+        order = new model.datapump.PatientRegimen();
+        order.setPatientID(rs.getInt("patient_id"));
+        order.setPepfarID(rs.getString("pepfar_id"));
+        order.setHospID(rs.getString("hosp_id"));
+        order.setStartDate(rs.getDate("visit_date"));
+        duration = rs.getInt("duration");
+        //duration_unit = rs.getString("duration_unit");
+        //stopDate = calculateStopDate(order.getStartDate(), duration, duration_unit);
+        order.setStopDate(rs.getDate("stop_date"));
+        order.setDrugName(rs.getString("drug_name"));
+        
+
+        //order.setRegimenName(rs.getString("regimen"));
+        //order.setCode(String.valueOf(rs.getInt("regimen_code")));
+        //order.setRegimenLine(rs.getString("regimen_line"));
         order.setEnteredBy(rs.getString("entered_by"));
         order.setDateEntered(rs.getDate("date_entered"));
         order.setCreator(rs.getInt("creator_id"));
@@ -7162,7 +7223,7 @@ public class DataPumpDao implements model.datapump.DataAccess {
         screen.updateStatus("Loading ART Date Dictionary...Please wait");
         /*String sql_text = "select  obs.person_id, obs.value_datetime from obs left join encounter on(obs.encounter_id=encounter.encounter_id) where concept_id=863 and obs.voided=0 and encounter.voided=0 and encounter.form_id=1 \n"
                 + "order by person_id ASC, obs.obs_datetime DESC ;";*/
-        String sql_text = "select encounter.patient_id,obs.value_datetime from encounter inner join obs on(obs.encounter_id=encounter.encounter_id and encounter.voided=0 and obs.concept_id=159599 and encounter.form_id IN (23,56))";
+        String sql_text = "select encounter.patient_id,obs.value_datetime from encounter inner join obs on(obs.encounter_id=encounter.encounter_id and encounter.voided=0 and obs.concept_id=863 and encounter.form_id IN (22,46))";
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
@@ -7182,7 +7243,6 @@ public class DataPumpDao implements model.datapump.DataAccess {
     }
 
     public String codeDrugs(String drugName) {
-
         String codedName = "";
         drugName = drugName.toUpperCase();
         if (drugName != null && !drugName.isEmpty()) {
@@ -8646,7 +8706,7 @@ public class DataPumpDao implements model.datapump.DataAccess {
     public HashMap<Integer, String> getAllPatientPepfarIDs() {
         ResultSet rs = null;
         HashMap<Integer, String> map = new HashMap<Integer, String>();
-        String query = "select patient_id,identifier from patient_identifier where identifier_type=4 and voided=0";
+        String query = "select patient_id,identifier from patient_identifier where identifier_type=3 and voided=0";
         PreparedStatement ps = prepareQuery(query);
         try {
             rs = ps.executeQuery();
@@ -9220,7 +9280,7 @@ public class DataPumpDao implements model.datapump.DataAccess {
                 + "                pid.identifier,\n"
                 + "                DATE_FORMAT(person.date_changed,'%Y-%m-%d %H:%i:%s') date_changed \n"
                 + "                from person \n"
-                + "                inner join patient_identifier pid on(pid.patient_id=person.person_id and pid.identifier_type=5 and pid.voided=0)\n"
+                + "                inner join patient_identifier pid on(pid.patient_id=person.person_id and pid.identifier_type=3 and pid.voided=0)\n"
                 + "                where person.person_id in(" + buildString(idSet) + ")  order by pid.identifier asc";
 
         Statement stmt = null;
@@ -9280,8 +9340,8 @@ public class DataPumpDao implements model.datapump.DataAccess {
                 /*if (!StringUtils.isEmpty(pepfarID)) {
                     pts.setPepfarID(pepfarDictionary.get(person_id));
                 } */
-               
-                pts.setPepfarID(hospIDDictionary.get(person_id));
+
+                pts.setPepfarID(pepfarDictionary.get(person_id));
                 pts.setHospID(hospIDDictionary.get(person_id));
                 pts.seteHNID(ehnidDictionary.get(person_id));
                 pts.setOtherID(otherIDDictionary.get(person_id));
@@ -9507,7 +9567,7 @@ public class DataPumpDao implements model.datapump.DataAccess {
     public HashMap<Integer, String> getAllPatientHospIDs() {
         ResultSet rs = null;
         HashMap<Integer, String> map = new HashMap<Integer, String>();
-        String query = "select patient_id,identifier from patient_identifier where identifier_type=5 and voided=0";
+        String query = "select patient_id,identifier from patient_identifier where identifier_type=6 and voided=0";
         PreparedStatement ps = prepareQuery(query);
         try {
             rs = ps.executeQuery();
@@ -9988,7 +10048,7 @@ public class DataPumpDao implements model.datapump.DataAccess {
                 + "(select obs.person_id as patient_id,obs.obs_datetime as visit_date from obs where obs.voided=0\n"
                 + "union\n"
                 + "select orders.patient_id,orders.start_date from orders) as sinner group by sinner.patient_id";*/
-        String sql_text = "select encounter.patient_id, MIN(encounter.encounter_datetime) as first_visit_dt from encounter where encounter.voided=0 and encounter.encounter_datetime >'2001-01-01' ";
+        String sql_text = "select encounter.patient_id, MIN(encounter.encounter_datetime) as first_visit_dt from encounter where encounter.voided=0 and encounter.encounter_datetime >'2001-01-01' GROUP BY encounter.patient_id";
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {

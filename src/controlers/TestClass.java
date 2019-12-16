@@ -6,6 +6,7 @@
 package controlers;
 
 import daos.DataPumpDao;
+import dictionary.NDRPharmacyDictionary;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -110,11 +111,23 @@ public class TestClass {
         return StringUtils.join(codeArr, "/");
     }
     public static void main(String[] arg) throws FileNotFoundException  {
-        String codedDrug="D4T-3TC-LPV/r";
-        loadMaps();
-        System.out.println(getCode(StringUtils.replace(codedDrug, "/","")));
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        String data="Lamivudine (150mg) / Zidovudine (300mg) / Nevirapine (200mg)";
+        NDRPharmacyDictionary pd=new NDRPharmacyDictionary();
+       
+        //data =StringUtils.replacePattern(data,"\\/r", "r");
+        //data = StringUtils.trim(StringUtils.replacePattern(data, "\\(.*?\\)", ""));
+        System.out.println(pd.convertDrugToRegimenCode(data));
+        //String codedDrug="D4T-3TC-LPV/r";
+        //loadMaps();
+        //System.out.println(getCode(StringUtils.replace(codedDrug, "/","")));
+        //ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        /*int i=0;
         
+        while(i<1000){
+            i++;
+            NDRPharmacyDictionary dictionary=new NDRPharmacyDictionary();
+            System.out.println("Size: "+dictionary.ndrCodedValues.keySet().size());
+        }*/
         
         
        /* HashMap<String,Integer> map=new HashMap<String,Integer>();

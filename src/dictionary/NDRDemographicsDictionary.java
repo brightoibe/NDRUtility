@@ -840,25 +840,32 @@ public class NDRDemographicsDictionary {
 
     public void loadPatientDemographicDictionary() {
         patientDemographicDictionary = new HashMap<Integer, String>();
-        /*patientDemographicDictionary.put(1080, "eng");
+        //Primary Language Coding
+        patientDemographicDictionary.put(1080, "eng");
         patientDemographicDictionary.put(1081, "hau");
         patientDemographicDictionary.put(1082, "yor");
-        patientDemographicDictionary.put(1519, "ibo");*/
-        patientDemographicDictionary.put(1107, "1"); // None
-        patientDemographicDictionary.put(1713, "2");// Completed Primary
-        patientDemographicDictionary.put(1714, "3");// Secondary School Education
-        patientDemographicDictionary.put(5622, "4");// Qur'anic
-        patientDemographicDictionary.put(160292, "6");// Post Secondary
-        patientDemographicDictionary.put(1540, "EMP");// Employed
-        patientDemographicDictionary.put(159461, "RET");// Retired
-        patientDemographicDictionary.put(159465, "STU");// Student
+        patientDemographicDictionary.put(7778842, "ibo");
+        //Educational Status Code
+        patientDemographicDictionary.put(28, "1"); // None
+        patientDemographicDictionary.put(850, "2");// Completed Primary
+        patientDemographicDictionary.put(7777752, "3");// Secondary School Education
+        patientDemographicDictionary.put(7777751, "3");// Secondary School Education
+        patientDemographicDictionary.put(1078, "4");// Qur'anic
+        patientDemographicDictionary.put(1523, "6");// Post Secondary
+        //Ocupational Status Code
+        patientDemographicDictionary.put(1076, "EMP");// Employed
+        patientDemographicDictionary.put(1521, "RET");// Retired
+        patientDemographicDictionary.put(1520, "STU");// Student
+        patientDemographicDictionary.put(906, "UNE");// Unemployed
+        
+        
         patientDemographicDictionary.put(5622, "NA");// 5622
-        patientDemographicDictionary.put(5555, "M");// Married
-        patientDemographicDictionary.put(1060, "G");// Living With Partner
-        patientDemographicDictionary.put(1057, "S");// Single
-        patientDemographicDictionary.put(1058, "D");// Divorced
-        patientDemographicDictionary.put(1059, "W");// Widowed
-        patientDemographicDictionary.put(1056, "A");// Separated
+        patientDemographicDictionary.put(350, "M");// Married
+        patientDemographicDictionary.put(346, "G");// Living With Partner
+        patientDemographicDictionary.put(348, "S");// Single
+        patientDemographicDictionary.put(351, "D");// Divorced
+        patientDemographicDictionary.put(349, "W");// Widowed
+        patientDemographicDictionary.put(1522, "A");// Separated
 
     }
 
@@ -867,9 +874,11 @@ public class NDRDemographicsDictionary {
         demo.setPatientIdentifier(patient.getPepfarID());
         IdentifierType idt = null;
         IdentifiersType idtss = new IdentifiersType();
-        String hospID = loc.getDatimID() + "-" + patient.getHospID();
+        //String hospID = loc.getDatimID() + "-" + patient.getHospID();
+        String hospID = patient.getHospID();
         String otherID = patient.getOtherID();
-        String pepfarID = loc.getDatimID() + "-" + patient.getPepfarID();
+        //String pepfarID = loc.getDatimID() + "-" + patient.getPepfarID();
+        String pepfarID = patient.getPepfarID();
         if (StringUtils.isNotEmpty(hospID)) {
             idt = new IdentifierType();
             idt.setIDNumber(hospID);
@@ -907,9 +916,9 @@ public class NDRDemographicsDictionary {
         }
         demo.setPatientDateOfBirth(getXmlDate(patient.getDateOfBirth()));
         String stateOfOrigin = patient.getAddress_state();
-        //if (stateOfOrigin != null) {
-        //demo.setStateOfNigeriaOriginCode(stateCodeDictinary.get(stateOfOrigin.toUpperCase()));
-        //}
+        if (stateOfOrigin != null) {
+        demo.setStateOfNigeriaOriginCode(stateCodeDictionary.get(stateOfOrigin.toUpperCase()));
+        }
         int conceptID = 0;
         int value_coded = 0;
         String value_text = "";
@@ -918,36 +927,42 @@ public class NDRDemographicsDictionary {
         for (Obs obs : obsList) {
             conceptID = obs.getConceptID();
             switch (conceptID) {
-                case 165470://977
+                case 977://Reason for Termination
                     value_coded = obs.getValueCoded();
-                    if (value_coded == 165889) {
+                    if (value_coded == 975) {// if dead
                         demo.setPatientDeceasedIndicator(true);
                         demo.setPatientDeceasedDate(getXmlDate(obs.getVisitDate()));
                     } else {
                         demo.setPatientDeceasedIndicator(false);
                     }
                     break;
-                /*case 1083:
-                    value_coded = obs.getValueCoded();
-                    demo.setPatientPrimaryLanguageCode(patientDemographicDictionary.get(value_coded));
-                    break;*/
-                case 1712://1079
-                    value_coded = obs.getValueCoded();
-                    if (value_coded != 789) {
-                        demo.setPatientEducationLevelCode(patientDemographicDictionary.get(value_coded));
+                case 7778447://Patient Dead
+                    value_coded=obs.getValueCoded();
+                    if (value_coded == 80) {// if dead
+                        demo.setPatientDeceasedIndicator(true);
+                        demo.setPatientDeceasedDate(getXmlDate(obs.getVisitDate()));
+                    } else {
+                        demo.setPatientDeceasedIndicator(false);
                     }
                     break;
-                case 1542://915
+                case 1083://Preferred Language
+                    value_coded = obs.getValueCoded();
+                    demo.setPatientPrimaryLanguageCode(patientDemographicDictionary.get(value_coded));
+                    break;
+                case 1079://Educational Level
+                    value_coded = obs.getValueCoded();
+                    //if (value_coded != 789) {
+                        demo.setPatientEducationLevelCode(patientDemographicDictionary.get(value_coded));
+                    //}
+                    break;
+                case 915://Occupation
                     value_coded = obs.getValueCoded();
                     demo.setPatientOccupationCode(patientDemographicDictionary.get(value_coded));
                     break;
-                case 1054://352
+                case 1075:// Parents Civil Status
                     value_coded = obs.getValueCoded();
-                    if (value_coded == 789) {
-                        demo.setPatientMaritalStatusCode("T");
-                    } else {
-                        demo.setPatientMaritalStatusCode(patientDemographicDictionary.get(value_coded));
-                    }
+                    demo.setPatientMaritalStatusCode(patientDemographicDictionary.get(value_coded));
+                    
                     break;
             }
         }
