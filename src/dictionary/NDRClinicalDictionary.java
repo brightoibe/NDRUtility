@@ -266,58 +266,74 @@ public class NDRClinicalDictionary {
                         hivEncType.setNotedSideEffects(hivEncounterTypeDictionary.get(value_coded));
                         break;
                     */
-                    case 164506: // Adult 1st line ARV regimen
+                    case 7778706: // Adult 1st line ARV regimen
                         regimen = obs.getVariableValue();
+                        value_coded=obs.getValueCoded();
                         cst = new CodedSimpleType();
-                        cst.setCode(pharmacyDictionary.getRegimenCode(regimen, 164506));
-                        cst.setCodeDescTxt(pharmacyDictionary.getCareCardRegimen(regimen));
+                        //cst.setCode(pharmacyDictionary.getRegimenCode(regimen, 164506));
+                        cst.setCode(pharmacyDictionary.getRegimenConceptNDRCode(value_coded));
+                        cst.setCodeDescTxt(regimen);
                         hivEncType.setARVDrugRegimen(cst);
                         break;
-                    case 164513:// Adult 2nd line ARV regimen
+                    case 7778707:// Adult 2nd line ARV regimen
                         regimen = obs.getVariableValue();
+                        value_coded=obs.getValueCoded();
                         cst = new CodedSimpleType();
-                        cst.setCode(pharmacyDictionary.getRegimenCode(regimen, 164513));
+                        //cst.setCode(pharmacyDictionary.getRegimenCode(regimen, 164513));
+                        cst.setCode(pharmacyDictionary.getRegimenConceptNDRCode(value_coded));
                         //cst.setCode(getRegimenCode(regimen));
-                        cst.setCodeDescTxt(pharmacyDictionary.getCareCardRegimen(regimen));
+                        cst.setCodeDescTxt(regimen);
                         hivEncType.setARVDrugRegimen(cst);
                         break;
-                    case 165702:// Adult 3rd Line ARV Regimen
+                    case 7778838:// Adult 3rd Line ARV Regimen
                         regimen = obs.getVariableValue();
+                        value_coded=obs.getValueCoded();
                         cst = new CodedSimpleType();
-                        cst.setCode(pharmacyDictionary.getRegimenCode(regimen, 164513));
+                        //cst.setCode(pharmacyDictionary.getRegimenCode(regimen, 164513));
+                        cst.setCode(pharmacyDictionary.getRegimenConceptNDRCode(value_coded));
                         //cst.setCode(getRegimenCode(regimen));
-                        cst.setCodeDescTxt(pharmacyDictionary.getCareCardRegimen(regimen));
+                        //cst.setCodeDescTxt(pharmacyDictionary.getCareCardRegimen(regimen));
+                        cst.setCodeDescTxt(regimen);
                         hivEncType.setARVDrugRegimen(cst);
                         break;
-                    case 164507: // Child 1st line ARV regimen
+                    case 7778731: // Child 1st line ARV regimen
                         regimen = obs.getVariableValue();
+                        value_coded=obs.getValueCoded();
                         cst = new CodedSimpleType();
-                        cst.setCode(pharmacyDictionary.getRegimenCode(regimen, 164507));
+                        //cst.setCode(pharmacyDictionary.getRegimenCode(regimen, 164507));
                         //cst.setCode(getRegimenCode(regimen));
-                        cst.setCodeDescTxt(pharmacyDictionary.getCareCardRegimen(regimen));
+                        //cst.setCodeDescTxt(pharmacyDictionary.getCareCardRegimen(regimen));
+                        cst.setCode(pharmacyDictionary.getRegimenConceptNDRCode(value_coded));
+                        cst.setCodeDescTxt(regimen);
                         hivEncType.setARVDrugRegimen(cst);
                         break;
-                    case 164514: // Child 2nd line ARV regimen
+                    case 7778741: // Child 2nd line ARV regimen
                         regimen = obs.getVariableValue();
+                        value_coded=obs.getValueCoded();
                         cst = new CodedSimpleType();
-                        cst.setCode(pharmacyDictionary.getRegimenCode(regimen, 164514));
+                        //cst.setCode(pharmacyDictionary.getRegimenCode(regimen, 164514));
                         //cst.setCode(getRegimenCode(regimen));
-                        cst.setCodeDescTxt(pharmacyDictionary.getCareCardRegimen(regimen));
+                        //cst.setCodeDescTxt(pharmacyDictionary.getCareCardRegimen(regimen));
+                        cst.setCode(pharmacyDictionary.getRegimenConceptNDRCode(value_coded));
+                        cst.setCodeDescTxt(regimen);
                         hivEncType.setARVDrugRegimen(cst);
                         break;
-                    case 165703: //Child 3rd Line ARV Regimen
+                    case 7778742: //Child 3rd Line ARV Regimen
                         regimen = obs.getVariableValue();
+                        value_coded=obs.getValueCoded();
                         cst = new CodedSimpleType();
-                        cst.setCode(pharmacyDictionary.getRegimenCode(regimen, 164514));
+                        //cst.setCode(pharmacyDictionary.getRegimenCode(regimen, 164514));
                         //cst.setCode(getRegimenCode(regimen));
-                        cst.setCodeDescTxt(pharmacyDictionary.getCareCardRegimen(regimen));
+                        //cst.setCodeDescTxt(pharmacyDictionary.getCareCardRegimen(regimen));
+                        cst.setCode(pharmacyDictionary.getRegimenConceptNDRCode(value_coded));
+                        cst.setCodeDescTxt(regimen);
                         hivEncType.setARVDrugRegimen(cst);
                         break;
-                    case 165290:
+                    case 7777874:
                         value_coded = obs.getValueCoded();
                         hivEncType.setARVDrugAdherence(hivEncounterTypeDictionary.get(value_coded));
                         break;
-                    /*case 7778453:
+                    /*case  7778843:
                         value_coded = obs.getValueCoded();
                         hivEncType.setWhyPoorFairARVDrugAdherence(hivEncounterTypeDictionary.get(value_coded));
                         break;*/
@@ -328,7 +344,7 @@ public class NDRClinicalDictionary {
                         cst.setCodeDescTxt("Cotrimoxazole " + obs.getVariableValue());
                         hivEncType.setCotrimoxazoleDose(cst);
                         break;*/
-                    case 161625:
+                    case 7777875:
                         value_coded = obs.getValueCoded();
                         hivEncType.setCotrimoxazoleAdherence(hivEncounterTypeDictionary.get(value_coded));
                         break;
@@ -343,7 +359,7 @@ public class NDRClinicalDictionary {
                         cst.setCodeDescTxt("Isoniazid " + obs.getVariableValue());
                         hivEncType.setINHDose(cst);
                         break;*/
-                    case 161653:
+                    case  7777876:
                         value_coded = obs.getValueCoded();
                         hivEncType.setINHAdherence(hivEncounterTypeDictionary.get(value_coded));
                         break;
@@ -351,10 +367,10 @@ public class NDRClinicalDictionary {
                         value_coded = obs.getValueCoded();
                         hivEncType.setWhyPoorFairINHDrugAdherence(hivEncounterTypeDictionary.get(value_coded));
                         break;*/
-                    case 5096:
+                    /*case 5096:
                         value_datetime = obs.getValueDate();
                         hivEncType.setNextAppointmentDate(getXmlDate(value_datetime));
-                        break;
+                        break;*/
                     /*case 7777821:
                         value_coded = obs.getValueCoded();
                         if (hivEncType.getNextAppointmentDate() == null) {
@@ -376,7 +392,7 @@ public class NDRClinicalDictionary {
 
             }
 
-            PatientRegimen rgm = null;
+           /* PatientRegimen rgm = null;
             String openmrsARVRegimen = "";
             String cotrimDose = "";
             String inhDose = "";
@@ -397,7 +413,7 @@ public class NDRClinicalDictionary {
                         hivEncType.setARVDrugRegimen(cst);
                     }
                 }
-            }
+            }*/
            /*for (Drugs drg : drugList) {
                 drugName = drg.getDrugName();
                 strength = drg.getStrength();

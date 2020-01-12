@@ -34,10 +34,8 @@ public class NDRPharmacyDictionary {
 
     private Map<String, String> mapRegimenToCodeDictionary = new HashMap<String, String>();
     private Map<String, String> localDrugCodeMapping = new HashMap<String, String>();
-    private Map<String, String> arvDrugCodingMapping=new HashMap<String,String>();
+    private Map<String, String> arvDrugCodingMapping = new HashMap<String, String>();
     public Map<Integer, String> ndrCodedValues = new HashMap<Integer, String>();
-    
-    
 
     public NDRPharmacyDictionary() {
         loadDictionaries();
@@ -86,8 +84,40 @@ public class NDRPharmacyDictionary {
         ndrCodedValues.put(7777920, "5e");//	ABC/3TC/ddi 
         ndrCodedValues.put(7777921, "5c");//	d4T/3TC/LPV/r 
 
+        // Adult 1st-Line Regimens (7778706)
+        ndrCodedValues.put(7778704, "1m");//TDF-3TC-DTG 
+        ndrCodedValues.put(7778705, "1e");//TDF-3TC-EFV400 
+        ndrCodedValues.put(7778609, "1a");//AZT-3TC-EFV duplicate
+        ndrCodedValues.put(7778610, "1b");//AZT-3TC-NVP duplicate
+        ndrCodedValues.put(7778611, "1e");//TDF-3TC-EFV 
+        // Adult 2nd-Line Regimens (7778707)
+        ndrCodedValues.put(7778616, "2f");//AZT-3TC-ATVr 
+        ndrCodedValues.put(7778709, "6e");//AZT-3TC-DRVr 
+        ndrCodedValues.put(7778617, "2g");//AZT-TDF-3TC-LPVr 
+        ndrCodedValues.put(7778614, "2d");//TDF-3TC-ATVr 
+        ndrCodedValues.put(7778708, "6g");//TDF-3TC-DRVr 
+        ndrCodedValues.put(7778613, "2b");//TDF-3TC-LPVr 
+        //Adult 3rd-Line Regimens (7778838)
+        ndrCodedValues.put(7778710, "6c");//	 DRVr + DTG +/- 1-2 NRTIs 
+        ndrCodedValues.put(7778712, "6a");//	 DRVr-2NTRIs+/-NNRTI 
+        ndrCodedValues.put(7778749, "6d");//	 DRVr-RAL-/+1-2NRTIs
+        //Peadiatric 1st-Line Regimens (7778731)
+        ndrCodedValues.put(7778732, "4d");//	ABC-3TC-NVP 
+        ndrCodedValues.put(7778733, "1f");//	TDF-3TC-NVP 
+        ndrCodedValues.put(7778734, "1o");//	ABC-3TC-DTG 
+        ndrCodedValues.put(7778735, "5a");//	ABC-3TC-LPVr 
+        ndrCodedValues.put(7778615, "5b");//	AZT-3TC-LPVr 
+        //Peadiatric 2nd-Line Regimen (7778741)
+        ndrCodedValues.put(7778736, "5k");//TDF-3TC-RAL 
+        ndrCodedValues.put(7778738, "5i");//AZT-3TC-RAL 
+        ndrCodedValues.put(7778836, "5a");//ABC-3TC-LPV/r 
+        //Peadiatric 3rd-Line Regimens (7778742)
+        ndrCodedValues.put(7778739,"6k");//DTG+2NRTIs
+        ndrCodedValues.put(7778740,"6k");//DRVr+2NRTIs
+        
     }
-    public void loadARVDrugCoding(){
+
+    public void loadARVDrugCoding() {
         arvDrugCodingMapping.put("NEVIRAPINE", "NVP");
         arvDrugCodingMapping.put("LAMIVUDINE", "3TC");
         arvDrugCodingMapping.put("ABACAVIR", "ABC");
@@ -97,15 +127,16 @@ public class NDRPharmacyDictionary {
         arvDrugCodingMapping.put("RITONAVIR", "r");
         arvDrugCodingMapping.put("EFAVIRENZ", "EFV");
         arvDrugCodingMapping.put("TENOFOVIR", "TDF");
-        arvDrugCodingMapping.put("ATAZANAVIR","ATVr");
+        arvDrugCodingMapping.put("ATAZANAVIR", "ATVr");
         arvDrugCodingMapping.put("KALETRA", "LPVr");
         arvDrugCodingMapping.put("LOPINAVIR", "LPVr");
         arvDrugCodingMapping.put("EMTRICITABINE", "FTC");
         arvDrugCodingMapping.put("DIDANOSINE", "DDI");
-        arvDrugCodingMapping.put("STAVUDINE","D4T");
+        arvDrugCodingMapping.put("STAVUDINE", "D4T");
         arvDrugCodingMapping.put("SAQUINAVIR", "SQVr");
-        
+
     }
+
     public void loadLocalCodingDictionary() {
         localDrugCodeMapping = new HashMap<String, String>();
         localDrugCodeMapping.put("ACTION MEAL PRESCRIBED", "ACM");
@@ -201,14 +232,15 @@ public class NDRPharmacyDictionary {
         }
         return regimen;
     }
+
     public String codeDrugs(String drugName) {
         drugName = drugName.toUpperCase();
         String codedName = drugName;
-        Set<String> keySet=null;
+        Set<String> keySet = null;
         if (drugName != null && !drugName.isEmpty()) {
-            keySet=arvDrugCodingMapping.keySet();
-            for(String key: keySet){
-                codedName=StringUtils.replacePattern(codedName, key, arvDrugCodingMapping.get(key));
+            keySet = arvDrugCodingMapping.keySet();
+            for (String key : keySet) {
+                codedName = StringUtils.replacePattern(codedName, key, arvDrugCodingMapping.get(key));
             }
             /*if (drugName.contains("NEVIRAPINE")) {
                 codedName += "NVP/";
@@ -254,11 +286,11 @@ public class NDRPharmacyDictionary {
             }*/
             if (codedName.endsWith("/")) {
                 codedName = codedName.substring(0, codedName.length() - 1);
-                
+
             }
 
         }
-        codedName=StringUtils.replacePattern(codedName,"\\s+", "");
+        codedName = StringUtils.replacePattern(codedName, "\\s+", "");
         return sortRegimen(codedName);
     }
 
@@ -271,7 +303,6 @@ public class NDRPharmacyDictionary {
         return ans;
     }
 
-    
     public String getRegimenLineCoding(String codedDrug) {
         String line = "";
         if (codedDrug.contains("LPVr") || codedDrug.contains("SQVr") || codedDrug.contains("IDVr") || codedDrug.contains("DDI") || codedDrug.contains("ATVr")) {
@@ -299,13 +330,14 @@ public class NDRPharmacyDictionary {
         return StringUtils.join(codeArr, "/");
     }
 
-    public String convertDrugToRegimenCode(String drugName){
-        String regimenCoding="";
-        drugName =StringUtils.replacePattern(drugName,"\\/r", "r");
+    public String convertDrugToRegimenCode(String drugName) {
+        String regimenCoding = "";
+        drugName = StringUtils.replacePattern(drugName, "\\/r", "r");
         drugName = StringUtils.trimToEmpty(StringUtils.replacePattern(drugName, "\\(.*?\\)", ""));
-        regimenCoding=codeDrugs(drugName);
+        regimenCoding = codeDrugs(drugName);
         return regimenCoding;
     }
+
     public String getRegimenCode(String regimen) {
         String code = null;
         Set<String> set = mapRegimenToCodeDictionary.keySet();
@@ -518,7 +550,7 @@ public class NDRPharmacyDictionary {
                 obsID = obsPin.getObsID();
                 obsPin = NDRCommonUtills.getObsForConceptFromListWithGroupID(159368, obsList, obsID);//Medication Duration Concept 
                 //if (obsPin != null) {
-                    //System.out.println(obsPin.getValueNumeric() + " = Duration");
+                //System.out.println(obsPin.getValueNumeric() + " = Duration");
                 //}
                 if (obsPin != null) {
                     //System.out.println("Obs ID group ID is: " + obsPin.getObsID());
@@ -625,11 +657,11 @@ public class NDRPharmacyDictionary {
         String durationUnit = "DAY(S)";
         Date stopDate = null;
         //if (stopDate == null) {
-            obsPin = NDRCommonUtills.getObsForConceptFromListWithGroupID(159368, obsListForVisit, obsID);//Medication duration
-            if (obsPin != null) {
-                duration = (int) obsPin.getValueNumeric();
-                stopDate = NDRCommonUtills.calculateStopDate(visitDate, duration, durationUnit);
-            }
+        obsPin = NDRCommonUtills.getObsForConceptFromListWithGroupID(159368, obsListForVisit, obsID);//Medication duration
+        if (obsPin != null) {
+            duration = (int) obsPin.getValueNumeric();
+            stopDate = NDRCommonUtills.calculateStopDate(visitDate, duration, durationUnit);
+        }
         //}
         if (stopDate == null) {
             obsPin = NDRCommonUtills.getObsForConceptFromList(5096, obsListForVisit);// Next Appointment Date
@@ -721,10 +753,12 @@ public class NDRPharmacyDictionary {
         }
         return coding;
     }
-    public String getRegimenConceptNDRCode(int valueCoded){
-        String code=ndrCodedValues.get(valueCoded);
+
+    public String getRegimenConceptNDRCode(int valueCoded) {
+        String code = ndrCodedValues.get(valueCoded);
         return code;
     }
+
     public boolean isValidOIDrug(String drugName) {
         boolean ans = false;
         if (localDrugCodeMapping.containsKey(drugName)) {
