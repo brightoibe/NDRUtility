@@ -1243,7 +1243,7 @@ public class DataPumpDao implements model.datapump.DataAccess {
                             }
                             clinicalObsList = extractClinicalObs(obsList);
                             if (obsList != null && !obsList.isEmpty()) {
-                                hivEncounterType = NDRDictionary.createHIVEncounter(ele, artStartDate, obsList, orders, drugList);
+                                hivEncounterType = NDRDictionary.createHIVEncounter(ele, artStartDate, obsList, null, drugList);
                                 encounterType.getHIVEncounter().add(hivEncounterType);
                             }
                         }

@@ -137,7 +137,41 @@ public class NDRPharmacyDictionary {
         arvDrugCodingMapping.put("DIDANOSINE", "DDI");
         arvDrugCodingMapping.put("STAVUDINE", "D4T");
         arvDrugCodingMapping.put("SAQUINAVIR", "SQVr");
-        arvDrugCodingMapping.put("Dolutegravir", "DTG");
+        arvDrugCodingMapping.put("DOLUTEGRAVIR", "DTG");
+        arvDrugCodingMapping.put("AZT/3TC/NVP", "AZT/3TC/NVP");
+        arvDrugCodingMapping.put("AZT/3TC/EFV", "AZT/3TC/EFV");
+        arvDrugCodingMapping.put("TDF/3TC/EFV", "TDF/3TC/EFV");
+        arvDrugCodingMapping.put("TDF/FTC/EFV", "TDF/FTC/EFV");
+        arvDrugCodingMapping.put("TDF/FTC/NVP", "TDF/FTC/NVP");
+        arvDrugCodingMapping.put("AZT/3TC/ABC", "AZT/3TC/ABC");
+        arvDrugCodingMapping.put("AZT/3TC/FTC", "AZT/3TC/FTC");
+        arvDrugCodingMapping.put("TDF/FTC/LPVr", "TDF/FTC/LPVR");
+        arvDrugCodingMapping.put("TDF/3TC/LPVr", "TDF/3TC/LPVR");
+        arvDrugCodingMapping.put("TDF/FTC/ATVr", "TDF/FTC/ATVR");
+        arvDrugCodingMapping.put("AZT/3TC/LPVr", "AZT/3TC/LPVR");
+        arvDrugCodingMapping.put("AZT/3TC/ATVr", "AZT/3TC/ATVR");
+        arvDrugCodingMapping.put("ABC/FTC/EFV", "ABC/FTC/EFV");
+        arvDrugCodingMapping.put("ABC/FTC/NVP", "ABC/FTC/NVP");
+        arvDrugCodingMapping.put("d4T/3TC/NVP", "D4T/3TC/NVP");
+        arvDrugCodingMapping.put("AZT/3TC/LPVr", "AZT/3TC/LPVR");
+        arvDrugCodingMapping.put("ABC/3TC/LPVr", "ABC/3TC/LPVR");
+        arvDrugCodingMapping.put("ddi/3TC/NVP", "DDI/3TC/NVP");
+        arvDrugCodingMapping.put("d4T/3TC/LPVr", "D4T/3TC/LPVR");
+        arvDrugCodingMapping.put("ABC/3TC/ddi", "ABC/3TC/DDI");
+        arvDrugCodingMapping.put("TDF/3TC/NVP", "TDF/3TC/NVP");
+        arvDrugCodingMapping.put("d4T/3TC/EFV", "D4T/3TC/EFV");
+        arvDrugCodingMapping.put("d4T/3TC/NVP", "D4T/3TC/NVP");
+        arvDrugCodingMapping.put("ABC/3TC/EFV", "ABC/3TC/EFV");
+        arvDrugCodingMapping.put("ABC/3TC/LPVr", "ABC/3TC/LPVR");
+        arvDrugCodingMapping.put("TDF/3TC/LPVr", "TDF/3TC/LPVR");
+        arvDrugCodingMapping.put("TDF/3TC/DTG", "TDF/3TC/DTG");
+        arvDrugCodingMapping.put("TDF/FTC", "TDF/FTC");
+        arvDrugCodingMapping.put("TDF/3TC", "TDF/3TC");
+        arvDrugCodingMapping.put("AZT/3TC", "AZT/3TC");
+        arvDrugCodingMapping.put("TDF/3TC", "TDF/3TC");
+        arvDrugCodingMapping.put("ABC/3TC", "ABC/3TC");
+        arvDrugCodingMapping.put("LPVr", "LPVR");
+        arvDrugCodingMapping.put("ATVr", "ATVR");
 
     }
 
@@ -225,15 +259,19 @@ public class NDRPharmacyDictionary {
         }
         return Arrays.equals(arr1, arr2);
     }
-    public static void main(String[] arg){
-        NDRPharmacyDictionary dic=new NDRPharmacyDictionary();
-        System.out.println(dic.getRegimenCoding("TDF/3TC/EFV (300mg/300mg/600mg)/Cotrimoxazole (960mg)/Isoniazid INH (300mg)"));
+
+    public static void main(String[] arg) {
+        NDRPharmacyDictionary dic = new NDRPharmacyDictionary();
+        System.out.println(dic.getRegimenCoding("ABC/3TC/LPV/r (60/30/100/25mg)/Cotrimoxazole (480mg)"));
     }
-    public  String getRegimenCoding(String drugName){
-        String codedDrugs=convertDrugToRegimenCode(drugName);
-        String regimenLine=getRegimenLineCoding(codedDrugs);
+
+    public String getRegimenCoding(String drugName) {
+        String codedDrugs = convertDrugToRegimenCode(drugName);
+        String regimenLine = getRegimenLineCoding(codedDrugs);
+        //System.out.println(codedDrugs);
         return getRegimenCode(codedDrugs, regimenLine);
     }
+
     public String getCareCardRegimen(String openmrsRegimen) {
         String regimen = null;
         Set<String> set = mapRegimenToCodeDictionary.keySet();
@@ -248,13 +286,23 @@ public class NDRPharmacyDictionary {
 
     public String codeDrugs(String drugName) {
         drugName = drugName.toUpperCase();
-        String codedName = drugName;
+        String codedName =drugName;
         Set<String> keySet = null;
         if (drugName != null && !drugName.isEmpty()) {
             keySet = arvDrugCodingMapping.keySet();
             for (String key : keySet) {
-                codedName = StringUtils.replacePattern(codedName, key, arvDrugCodingMapping.get(key));
+                if(StringUtils.contains(key, drugName)){
+                    codedName = StringUtils.replacePattern(codedName, key, arvDrugCodingMapping.get(key));
+                }//codedName = StringUtils.replacePattern(codedName, key, arvDrugCodingMapping.get(key));
+           }
+            String[] spiltCodedName=StringUtils.split(codedName,"/");
+            String newStr="";
+            for(String ele: spiltCodedName){
+                if(StringUtils.length(ele)<=5 && !StringUtils.equalsIgnoreCase(ele, "INH")){
+                    newStr+=ele+"/";
+                }
             }
+            codedName=newStr;
             /*if (drugName.contains("NEVIRAPINE")) {
                 codedName += "NVP/";
             }
@@ -362,17 +410,20 @@ public class NDRPharmacyDictionary {
         }
         return code;
     }
+
     public String getRegimenCode(String codedDrug, String regimenLineConcept) {
         String code = null;
-        
+
         Set<String> set = mapRegimenToCodeDictionary.keySet();
         for (String ele : set) {
+            //System.out.println("ele: "+ele+" and "+codedDrug);
             if (isEquivalent(codedDrug, ele)) {
+                
                 code = mapRegimenToCodeDictionary.get(ele);
                 return code;
             }
         }
-        if (StringUtils.isEmpty(code) &&  StringUtils.equalsIgnoreCase(regimenLineConcept, "10")) {
+        if (StringUtils.isEmpty(code) && StringUtils.equalsIgnoreCase(regimenLineConcept, "10")) {
             code = "1k";
         }
         if (StringUtils.isEmpty(code) && StringUtils.equalsIgnoreCase(regimenLineConcept, "20")) {
@@ -624,19 +675,29 @@ public class NDRPharmacyDictionary {
         for (int i = 0; i < arvConceptIDs.length; i++) {
             arvConceptIDStr[i] = String.valueOf(arvConceptIDs[i]);
         }
-        for(String ele: arvConceptIDStr){
-            if(StringUtils.contains(ele, conceptStr)){
-                ans=true;
+        for (String ele : arvConceptIDStr) {
+            if (StringUtils.contains(ele, conceptStr)) {
+                ans = true;
             }
         }
         return ans;
     }
 
-    public RegimenType createRegimenTypeARV(model.datapump.DrugOrder order) {
+    public RegimenType createRegimenTypeARV(model.datapump.DrugOrder order) throws DatatypeConfigurationException {
         RegimenType regimenType = null;
-        String codedDrug="";
-        String regimenCoding="";
-        codedDrug=codeDrugs(order.getDrugName());
+        String codedDrug = "";
+        String regimenCoding = "",regimenLine="";
+        String drugName=order.getDrugName();
+        regimenCoding=getRegimenCoding(drugName);
+        codedDrug=codeDrugs(drugName);
+        String description=codedDrug;
+        String regimenTypeCoding="ART";
+        String pepfarID=order.getPepfarID();
+        Date visitDate=order.getStartDate();
+        Date stopDate=calculateRegimenStopDate(visitDate, order.getFrequency());
+        regimenType=createRegimenType(pepfarID, visitDate, regimenCoding, description, stopDate, regimenTypeCoding);
+        regimenLine=getRegimenLineCoding(codedDrug);
+        regimenType.setPrescribedRegimenLineCode(regimenLine);
         /*
            RegimenType
            -VisitID
@@ -669,10 +730,10 @@ public class NDRPharmacyDictionary {
 
     public List<RegimenType> constructRegimenTypeListARV(Demographics pts, List<model.datapump.DrugOrder> drugOrderList) throws DatatypeConfigurationException {
         List<RegimenType> regimenTypeList = new ArrayList<RegimenType>();
-        RegimenType regimenType=null;
-        for(model.datapump.DrugOrder order : drugOrderList){
-            if(isValidARV(order.getDrugName())){
-                regimenType=createRegimenTypeARV(order);
+        RegimenType regimenType = null;
+        for (model.datapump.DrugOrder order : drugOrderList) {
+            if (isValidARV(order.getConceptStr())) {
+                regimenType = createRegimenTypeARV(order);
                 regimenTypeList.add(regimenType);
             }
         }
@@ -683,7 +744,7 @@ public class NDRPharmacyDictionary {
         String code = "";
         if (StringUtils.isNotEmpty(conceptString)) {
             if (StringUtils.contains(code, code)) {
-                
+
             }
         }
         return code;
