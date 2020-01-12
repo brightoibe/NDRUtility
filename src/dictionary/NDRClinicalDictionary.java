@@ -197,28 +197,20 @@ public class NDRClinicalDictionary {
             for (Obs obs : obsList) {
                 conceptID = obs.getConceptID();
                 switch (conceptID) {
-                    case 85:// Weight (Kg)
+                    case 85:// Weight (Kg) from Vital Signs Form (6)
                         value_numeric = (int) Math.round(obs.getValueNumeric());
                         hivEncType.setWeight(value_numeric);
                         break;
-                    case 571: // Height (cm)
+                    case 571: // Height (cm) from Vital Signs Form (6)
                         value_numeric = (int) Math.round(obs.getValueNumeric());
                         hivEncType.setChildHeight(value_numeric);
                         break;
-                    case 88:// CD4 Count
+                    case 88:// CD4 Count from Laboratory Results Form (5)
                         value_numeric = (int) Math.round(obs.getValueNumeric());
                         hivEncType.setCD4(value_numeric);
                         hivEncType.setCD4TestDate(getXmlDate(obs.getVisitDate()));
                         break;
-                    /*case 85:// investigate
-                        value_numeric = (int) Math.round(obs.getValueNumeric());
-                        hivEncType.setWeight(value_numeric);
-                        break;*/
-                    /*case 571:// Investigate
-                        value_numeric = (int) Math.round(obs.getValueNumeric());
-                        hivEncType.setChildHeight(value_numeric);
-                        break;*/
-                    case 7777871:
+                    case 7777871:// PMTCT Link from Care/ART Card(8)
                         value_coded = obs.getValueCoded();
                         code = hivEncounterTypeDictionary.get(value_coded);
                         if (StringUtils.isNotEmpty(code)) {
@@ -239,38 +231,42 @@ public class NDRClinicalDictionary {
                             hivEncType.setEDDandPMTCTLink("NP");
                         }
                         break;
-                    case 5271://1741
+                    case 1741://Family Planning Status
                         value_coded = obs.getValueCoded();
-                        if (value_coded == 1) {
+                        if (value_coded == 1739) {
                             hivEncType.setPatientFamilyPlanningCode("FP");
-                        } else if (value_coded == 0) {
+                        } else if (value_coded == 1740) {
                             hivEncType.setPatientFamilyPlanningCode("NOFP");
                         }
                         break;
-                    case 374:
+                    case 1742:// Family Planning used
                         value_coded = obs.getValueCoded();
                         hivEncType.setPatientFamilyPlanningMethodCode(hivEncounterTypeDictionary.get(value_coded));
                         break;
-                    case 165039:
+                    case 1013:// Functional Status
                         value_coded = obs.getValueCoded();
                         hivEncType.setFunctionalStatus(hivEncounterTypeDictionary.get(value_coded));
                         break;
-                    case 5356:
+                    case 7777798:// WHO Stage
                         value_coded = obs.getValueCoded();
                         hivEncType.setWHOClinicalStage(hivEncounterTypeDictionary.get(value_coded));
                         break;
-                    case 1659:
+                    case 862:// TUBERCULOSIS DISEASE STATUS
                         value_coded = obs.getValueCoded();
                         hivEncType.setTBStatus(hivEncounterTypeDictionary.get(value_coded));
                         break;
-                    /*case 528:
+                    /*
+                        -- These two concepts were commented out because they can have multiple values (checkboxes)
+                   case 528:
                         value_coded = obs.getValueCoded();
                         hivEncType.setOtherOIOtherProblems(hivEncounterTypeDictionary.get(value_coded));
                         break;
                     case 1607:
                         value_coded = obs.getValueCoded();
                         hivEncType.setNotedSideEffects(hivEncounterTypeDictionary.get(value_coded));
-                        break;*/
+                        break;
+                        
+                     */
  /*                 case 88:
                         value_numeric = (int) obs.getValueNumeric();
                         hivEncType.setCD4(value_numeric);
