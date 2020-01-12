@@ -209,6 +209,12 @@ public class NDRMasterDictionary {
     public List<RegimenType> createRegimenTypeList(Demographics pts, List<Obs> pharmacyObsList) throws DatatypeConfigurationException {
         return pharmacyDictionary.constructRegimenTypeList(pts, pharmacyObsList);
     }
+    public List<RegimenType> createRegimenTypeListOI(Demographics pts, List<DrugOrder> drugOrderListOIs) throws DatatypeConfigurationException{
+        return pharmacyDictionary.constructRegimenTypeListOIs(pts, drugOrderListOIs);
+    }
+    public List<RegimenType> createRegimenTypeListARV(Demographics pts, List<DrugOrder> drugOrderListRegimens) throws DatatypeConfigurationException{
+        return pharmacyDictionary.constructRegimenTypeListARV(pts, drugOrderListRegimens);
+    }
 
     public EncountersType createEncounterType() {
         EncountersType encounterType = new EncountersType();

@@ -1150,7 +1150,7 @@ public class DataPumpDao implements model.datapump.DataAccess {
         HIVQuestionsType hivQuestionType = null;
         RegimenType regimenType = null;
         EncountersType encounterType = null;
-        ArrayList<model.datapump.DrugOrder> orders = null;
+        List<model.datapump.DrugOrder> ordersOI, ordersARV;
         HIVEncounterType hivEncounterType = null;
         LaboratoryReportType labReportType = null;
         LaboratoryOrderAndResult labOrderAndResult = null;
@@ -1158,7 +1158,8 @@ public class DataPumpDao implements model.datapump.DataAccess {
         String fileName = file.getAbsolutePath();
         NDRMasterDictionary NDRDictionary = null;
         errorHandler = new CustomErrorHandler();
-        List<RegimenType> regimenTypeList = new ArrayList<RegimenType>();
+        List<RegimenType> regimenTypeList = null;
+        List<RegimenType> oiRegimenTypeList, arvRegimenTypeList;
         Date date = null;
         SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
         SimpleDateFormat dateForma2t = new SimpleDateFormat("HHmmss.ms");
@@ -1216,9 +1217,16 @@ public class DataPumpDao implements model.datapump.DataAccess {
                     hivQuestionType = NDRDictionary.createHIVQuestionType(firstRegimenDictionary.get(pts.getPatientID()), artStartDateDictionary.get(pts.getPatientID()), enrollDate, isOnART(pts.getPatientID()), obsList);
                     disease.setHIVQuestions(hivQuestionType);
                     conditionType.setConditionSpecificQuestions(disease);
-                    phamarcyObsList = getObsFromPharmacyForPatient(patientID);
-                    orders = getDrugOrderForPatient(pts.getPatientID(), phamarcyObsList);
-                    regimenTypeList = NDRDictionary.createRegimenTypeList(pts, phamarcyObsList);
+                    //phamarcyObsList = getObsFromPharmacyForPatient(patientID);
+                    //orders = getDrugOrderForPatient(pts.getPatientID(), phamarcyObsList);
+                    ordersOI = getDrugOrderForPatient2(pts.getPatientID());
+                    ordersARV = getDrugOrderForPatientARVs(pts.getPatientID());
+                    oiRegimenTypeList = NDRDictionary.createRegimenTypeListOI(pts,ordersOI);
+                    arvRegimenTypeList = NDRDictionary.createRegimenTypeListARV(pts,ordersARV);
+                    //regimenTypeList = NDRDictionary.createRegimenTypeList(pts, phamarcyObsList);
+                    regimenTypeList=new ArrayList<RegimenType>();
+                    regimenTypeList.addAll(oiRegimenTypeList);
+                    regimenTypeList.addAll(arvRegimenTypeList);
                     encounterType = NDRDictionary.createEncounterType();
                     ptsVisitList = extractVisit(pts.getPatientID(), allVisitList);
                     Date artStartDate = null;
@@ -1227,7 +1235,7 @@ public class DataPumpDao implements model.datapump.DataAccess {
                     for (model.datapump.Visit ele : ptsVisitList) {
                         obsList = getAllObsForVisit(ele);
                         labObsList = extractLabObs(obsList);
-                        if ((obsList != null && !obsList.isEmpty()) || (!orders.isEmpty())) {
+                        if ((obsList != null && !obsList.isEmpty()) ){//|| (!orders.isEmpty())) {
                             model.datapump.PatientRegimen ptsRgm = firstRegimenDictionary.get(pts.getPatientID());
                             artStartDate = artStartDateDictionary.get(pts.getPatientID());
                             if (artStartDate == null && ptsRgm != null) {
@@ -1247,6 +1255,7 @@ public class DataPumpDao implements model.datapump.DataAccess {
 
                     conditionType.setEncounters(encounterType);
                     conditionType.getRegimen().addAll(regimenTypeList);
+                    
                     individual.getCondition().add(conditionType);
                     container.setIndividualReport(individual);
                     screen.updateProgress(count);
@@ -1721,7 +1730,7 @@ public class DataPumpDao implements model.datapump.DataAccess {
         return patientRegimenList;
     }
 
-    public List<model.datapump.DrugOrder> getDrugOrderForPatient3(int patientID) {
+    public List<model.datapump.DrugOrder> getDrugOrderForPatientOIs(int patientID) {
         ArrayList<model.datapump.DrugOrder> drugOrderList = new ArrayList<model.datapump.DrugOrder>();
         String sql_text = "select \n"
                 + "patient.patient_id,\n"
@@ -1731,7 +1740,8 @@ public class DataPumpDao implements model.datapump.DataAccess {
                 + "orders.start_date,\n"
                 + "orders.discontinued_date,\n"
                 + "orders.concept_id,\n"
-                + "drug.`name` as drug_name,\n"
+                + "GROUP_CONCAT(orders.concept_id SEPARATOR  ',') as concept_str,\n"
+                + "GROUP_CONCAT(drug.`name` SEPARATOR  '/') as drug_name,\n"
                 + "drug_order.dose,\n"
                 + "drug_order.quantity,\n"
                 + "drug_order.frequency,\n"
@@ -1748,7 +1758,7 @@ public class DataPumpDao implements model.datapump.DataAccess {
                 + "inner join drug on(drug.drug_id=drug_order.drug_inventory_id)\n"
                 + "left join patient_identifier pid1 on(pid1.patient_id=orders.patient_id and pid1.identifier_type=6 and pid1.voided=0)\n"
                 + "left join patient_identifier pid2 on(pid2.patient_id=orders.patient_id and pid2.identifier_type=3 and pid2.voided=0)\n"
-                + "where orders.voided=0 and orders.patient_id=?\n"
+                + "where orders.voided=0 and orders.patient_id=? GROUP BY  orders.order_id\n"
                 + "\n"
                 + "";
         PreparedStatement ps = null;
@@ -1758,14 +1768,61 @@ public class DataPumpDao implements model.datapump.DataAccess {
             ps = prepareQuery(sql_text);
             ps.setInt(1, patientID);
             rs = ps.executeQuery();
-            while(rs.next()){
-                order=new model.datapump.DrugOrder();
-                order.setPatientID(rs.getInt("patient_id"));
-                
+            while (rs.next()) {
+                order = constructDrugOrder(rs);
+                drugOrderList.add(order);
             }
-        }catch(SQLException ex){
+        } catch (SQLException ex) {
             handleException(ex);
-        }finally{
+        } finally {
+            cleanUp(rs, ps);
+        }
+        return drugOrderList;
+    }
+
+    public List<model.datapump.DrugOrder> getDrugOrderForPatientARVs(int patientID) {
+        ArrayList<model.datapump.DrugOrder> drugOrderList = new ArrayList<model.datapump.DrugOrder>();
+        String sql_text = "select \n"
+                + "patient.patient_id,\n"
+                + "pid1.identifier as hosp_id,\n"
+                + "pid2.identifier as pepfar_id,\n"
+                + "orders.encounter_id,\n"
+                + "orders.start_date,\n"
+                + "orders.discontinued_date,\n"
+                + "orders.concept_id,\n"
+                + "GROUP_CONCAT(orders.concept_id SEPARATOR  ',') as concept_str,\n"
+                + "GROUP_CONCAT(drug.`name` SEPARATOR  '/') as drug_name,\n"
+                + "drug_order.dose,\n"
+                + "drug_order.quantity,\n"
+                + "drug_order.frequency,\n"
+                + "drug_order.equivalent_daily_dose,\n"
+                + "drug_order.units,\n"
+                + "drug_order.drug_inventory_id,\n"
+                + "orders.creator,\n"
+                + "orders.discontinued_reason,\n"
+                + "orders.date_created,\n"
+                + "orders.uuid\n"
+                + "from orders \n"
+                + "inner join patient on(orders.patient_id=patient.patient_id and orders.voided=0 and patient.voided=0)\n"
+                + "inner join drug_order on(drug_order.order_id=orders.order_id)\n"
+                + "inner join drug on(drug.drug_id=drug_order.drug_inventory_id)\n"
+                + "left join patient_identifier pid1 on(pid1.patient_id=orders.patient_id and pid1.identifier_type=6 and pid1.voided=0)\n"
+                + "left join patient_identifier pid2 on(pid2.patient_id=orders.patient_id and pid2.identifier_type=3 and pid2.voided=0)\n"
+                + "where orders.voided=0 and orders.patient_id=? GROUP BY  orders.patient_id, orders.start_date;";
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        model.datapump.DrugOrder order = null;
+        try {
+            ps = prepareQuery(sql_text);
+            ps.setInt(1, patientID);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                order = constructDrugOrder(rs);
+                drugOrderList.add(order);
+            }
+        } catch (SQLException ex) {
+            handleException(ex);
+        } finally {
             cleanUp(rs, ps);
         }
         return drugOrderList;
@@ -3947,17 +4004,29 @@ public class DataPumpDao implements model.datapump.DataAccess {
         }
         return obsList;
     }
-    public model.datapump.DrugOrder constructDrugOrder(ResultSet rs) throws SQLException{
-        model.datapump.DrugOrder order=new model.datapump.DrugOrder();
+
+    public model.datapump.DrugOrder constructDrugOrder(ResultSet rs) throws SQLException {
+        model.datapump.DrugOrder order = new model.datapump.DrugOrder();
         order.setPatientID(rs.getInt("patient_id"));
         order.setHospID(rs.getString("hosp_id"));
         order.setPepfarID(rs.getString("pepfar_id"));
         order.setEncounterID(rs.getInt("encounter_id"));
         order.setStartDate(rs.getDate("start_date"));
         order.setStopDate(rs.getDate("discontinued_date"));
-        
+        order.setConceptID(rs.getInt("concept_id"));
+        order.setConceptStr(rs.getString("concept_str"));
+        order.setDrugName(rs.getString("drug_name"));
+        order.setDrugDose(rs.getString("dose"));
+        order.setQuantity(rs.getDouble("quantity"));
+        order.setFrequency(rs.getString("frequency"));
+        order.setSingleDoseUnit(rs.getString("unit"));
+        order.setCreator(rs.getInt("creator"));
+        order.setDiscontinueReason(rs.getInt("discontinued_reason"));
+        order.setDateEntered(rs.getDate("date_created"));
+        order.setUuid(rs.getString("uuid"));
         return order;
     }
+
     public model.datapump.Obs constructObs2(ResultSet rs) throws SQLException {
         model.datapump.Obs obs = new model.datapump.Obs();
         int concept_id = 0, value_coded = 0;

@@ -13,6 +13,20 @@ import java.util.Date;
 public class DrugOrder extends model.datapump.Drugs{
 
     /**
+     * @return the conceptStr
+     */
+    public String getConceptStr() {
+        return conceptStr;
+    }
+
+    /**
+     * @param conceptStr the conceptStr to set
+     */
+    public void setConceptStr(String conceptStr) {
+        this.conceptStr = conceptStr;
+    }
+
+    /**
      * @return the drugID
      */
     public int getDrugID() {
@@ -84,6 +98,7 @@ public class DrugOrder extends model.datapump.Drugs{
     }
     private String uuid;
     private int conceptID;
+    private String conceptStr;
     private int patientID;
     private int encounterID;
     private int providerID;

@@ -8,6 +8,7 @@ package dictionary;
 import static com.inductivehealth.ndr.client.Client.getXmlDate;
 import com.inductivehealth.ndr.schema.CodedSimpleType;
 import com.inductivehealth.ndr.schema.RegimenType;
+import static daos.DataPumpDao.sortRegimen;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -36,6 +37,8 @@ public class NDRPharmacyDictionary {
     private Map<String, String> localDrugCodeMapping = new HashMap<String, String>();
     private Map<String, String> arvDrugCodingMapping = new HashMap<String, String>();
     public Map<Integer, String> ndrCodedValues = new HashMap<Integer, String>();
+    private final static String COTRIMOXAZOLE_REGIMEN_TYPE_CODE = "CTX";
+    private final static String INH_REGIMEN_TYPE_CODE = "TB";
 
     public NDRPharmacyDictionary() {
         loadDictionaries();
@@ -112,9 +115,9 @@ public class NDRPharmacyDictionary {
         ndrCodedValues.put(7778738, "5i");//AZT-3TC-RAL 
         ndrCodedValues.put(7778836, "5a");//ABC-3TC-LPV/r 
         //Peadiatric 3rd-Line Regimens (7778742)
-        ndrCodedValues.put(7778739,"6k");//DTG+2NRTIs
-        ndrCodedValues.put(7778740,"6k");//DRVr+2NRTIs
-        
+        ndrCodedValues.put(7778739, "6k");//DTG+2NRTIs
+        ndrCodedValues.put(7778740, "6k");//DRVr+2NRTIs
+
     }
 
     public void loadARVDrugCoding() {
@@ -134,6 +137,7 @@ public class NDRPharmacyDictionary {
         arvDrugCodingMapping.put("DIDANOSINE", "DDI");
         arvDrugCodingMapping.put("STAVUDINE", "D4T");
         arvDrugCodingMapping.put("SAQUINAVIR", "SQVr");
+        arvDrugCodingMapping.put("Dolutegravir", "DTG");
 
     }
 
@@ -213,14 +217,23 @@ public class NDRPharmacyDictionary {
         boolean ans = false;
         String[] arr1 = null, arr2 = null;
         if (openmrsRegimen != null && careCardRegimen != null) {
-            arr1 = openmrsRegimen.toUpperCase().split("-");
+            arr1 = openmrsRegimen.toUpperCase().split("/");
+            careCardRegimen = StringUtils.replacePattern(careCardRegimen, "\\/r", "r");
             arr2 = careCardRegimen.toUpperCase().split("-");
             Arrays.sort(arr1);
             Arrays.sort(arr2);
         }
         return Arrays.equals(arr1, arr2);
     }
-
+    public static void main(String[] arg){
+        NDRPharmacyDictionary dic=new NDRPharmacyDictionary();
+        System.out.println(dic.getRegimenCoding("TDF/3TC/EFV (300mg/300mg/600mg)/Cotrimoxazole (960mg)/Isoniazid INH (300mg)"));
+    }
+    public  String getRegimenCoding(String drugName){
+        String codedDrugs=convertDrugToRegimenCode(drugName);
+        String regimenLine=getRegimenLineCoding(codedDrugs);
+        return getRegimenCode(codedDrugs, regimenLine);
+    }
     public String getCareCardRegimen(String openmrsRegimen) {
         String regimen = null;
         Set<String> set = mapRegimenToCodeDictionary.keySet();
@@ -349,6 +362,24 @@ public class NDRPharmacyDictionary {
         }
         return code;
     }
+    public String getRegimenCode(String codedDrug, String regimenLineConcept) {
+        String code = null;
+        
+        Set<String> set = mapRegimenToCodeDictionary.keySet();
+        for (String ele : set) {
+            if (isEquivalent(codedDrug, ele)) {
+                code = mapRegimenToCodeDictionary.get(ele);
+                return code;
+            }
+        }
+        if (StringUtils.isEmpty(code) &&  StringUtils.equalsIgnoreCase(regimenLineConcept, "10")) {
+            code = "1k";
+        }
+        if (StringUtils.isEmpty(code) && StringUtils.equalsIgnoreCase(regimenLineConcept, "20")) {
+            code = "2g";
+        }
+        return code;
+    }
 
     public String getRegimenCode(String regimen, int regimenLineConcept) {
         String code = null;
@@ -390,20 +421,20 @@ public class NDRPharmacyDictionary {
         mapRegimenToCodeDictionary.put("AZT-3TC-ABC", "1g");
         mapRegimenToCodeDictionary.put("AZT-3TC-TDF", "1h");
         mapRegimenToCodeDictionary.put("TDF-FTC-LPV/r", "2a");
-        mapRegimenToCodeDictionary.put("TDF-3TC-LPV/r", "2b");
-        mapRegimenToCodeDictionary.put("TDF-FTC-ATV/r", "2c");
-        mapRegimenToCodeDictionary.put("TDF-3TC-ATV/r", "2d");
-        mapRegimenToCodeDictionary.put("AZT-3TC-LPV/r", "2e");
-        mapRegimenToCodeDictionary.put("AZT-3TC-ATV/r", "2f");
+        mapRegimenToCodeDictionary.put("TDF-3TC-LPVr", "2b");
+        mapRegimenToCodeDictionary.put("TDF-FTC-ATVr", "2c");
+        mapRegimenToCodeDictionary.put("TDF-3TC-ATVr", "2d");
+        mapRegimenToCodeDictionary.put("AZT-3TC-LPVr", "2e");
+        mapRegimenToCodeDictionary.put("AZT-3TC-ATVr", "2f");
         mapRegimenToCodeDictionary.put("AZT-3TC-EFV", "4a");
         mapRegimenToCodeDictionary.put("AZT-3TC-NVP", "4b");
         mapRegimenToCodeDictionary.put("ABC-3TC-EFV", "4c");
         mapRegimenToCodeDictionary.put("ABC-3TC-NVP", "4d");
         mapRegimenToCodeDictionary.put("AZT-3TC-ABC", "4e");
         mapRegimenToCodeDictionary.put("d4T-3TC-NVP", "4f");
-        mapRegimenToCodeDictionary.put("ABC-3TC-LPV/r", "5a");
-        mapRegimenToCodeDictionary.put("AZT-3TC-LPV/r", "5b");
-        mapRegimenToCodeDictionary.put("d4T-3TC-LPV/r", "5c");
+        mapRegimenToCodeDictionary.put("ABC-3TC-LPVr", "5a");
+        mapRegimenToCodeDictionary.put("AZT-3TC-LPVr", "5b");
+        mapRegimenToCodeDictionary.put("d4T-3TC-LPVr", "5c");
         mapRegimenToCodeDictionary.put("ABC-3TC-ddi", "5e");
         mapRegimenToCodeDictionary.put("AZT", "9a");
         mapRegimenToCodeDictionary.put("3TC", "9b");
@@ -482,6 +513,180 @@ public class NDRPharmacyDictionary {
             regimenTypeList.addAll(extractOIRegimens(obsList, vstDate, pts));
         }
         return regimenTypeList;
+    }
+
+    public List<RegimenType> constructRegimenTypeListOIs(Demographics pts, List<model.datapump.DrugOrder> drugOrderList) throws DatatypeConfigurationException {
+        List<RegimenType> regimenTypeList = new ArrayList<RegimenType>();
+        RegimenType regimenType = null;
+
+        /*
+           RegimenType
+           -VisitID
+           -VisitDate
+           -ReasonForRegimenSwitchSubs
+           -PrescribedRegimen
+           -PrescribedRegimenTypeCode
+           -PrescribedRegimenLineCode
+           -PrescribedRegimenDuration
+           -PrescribedRegimenDispensedDate
+           -DateRegimenStarted
+           -DateRegimenStartedDD
+           -DateRegimenStartedMM
+           -DateRegimenStartedYYYY
+           -DateRegimenEnded
+           -DateRegimenEndedDD
+           -DateRegimenEndedMM
+           -DateRegimenEndedYYYY
+           -PrescribedRegimenInitialIndicator
+           -PrescribedRegimenCurrentIndicator
+           -TypeOfPreviousExposureCode
+           -PoorAdherenceIndicator
+           -ReasonForPoorAdherence
+           -ReasonRegimenEndedCode
+           -SubstitutionIndicator
+           -SwitchIndicator
+           
+           
+         */
+        for (model.datapump.DrugOrder order : drugOrderList) {
+            if (order.getConceptID() == 963) {// Is this Cotrimoxazole
+                regimenType = createRegimenTypeOI(order);
+                regimenTypeList.add(regimenType);
+            }
+            if (order.getConceptID() == 1594) {// Is this INH
+                regimenType = createRegimenTypeOI(order);
+                regimenTypeList.add(regimenType);
+            }
+        }
+        return regimenTypeList;
+    }
+
+    public Date calculateRegimenStopDate(Date visitDate, String frequency) {
+        DateTime startDateTime = new DateTime(visitDate);
+        int durationDays = 90;
+        if (StringUtils.isNoneBlank(frequency)) {
+            if (StringUtils.contains("7 days/week", frequency)) {
+                durationDays = 7;
+            } else if (StringUtils.contains("3 Months", frequency)) {
+                durationDays = 90;
+            } else if (StringUtils.contains("6 Months", frequency)) {
+                durationDays = 180;
+            } else if (StringUtils.contains("2 Months", frequency)) {
+                durationDays = 60;
+            } else if (StringUtils.contains("1 Month", frequency)) {
+                durationDays = 30;
+            } else if (StringUtils.contains("2 days/week", frequency)) {
+                durationDays = 14;
+            } else if (StringUtils.contains("1 Month1", frequency)) {
+                durationDays = 30;
+            }
+        }
+        DateTime endDateTime = startDateTime.plusDays(durationDays);
+        return endDateTime.toDate();
+
+        //DateTime endDateTime = new DateTime(stopDate);
+    }
+
+    public RegimenType createRegimenTypeOI(model.datapump.DrugOrder order) throws DatatypeConfigurationException {
+        RegimenType regimenType = null;
+        String regimenCoding = "", regimenTypeCoding = "", description = "";
+        String pepfarID = "";
+        Date visitDate = null, stopDate = null;
+        if (order.getConceptID() == 963) {// COTRIMOXAZOLE CONCEPT ID
+            regimenCoding = "CTX960";
+            regimenTypeCoding = COTRIMOXAZOLE_REGIMEN_TYPE_CODE;
+            visitDate = order.getStartDate();
+            stopDate = order.getStopDate();
+            pepfarID = order.getPepfarID();
+            description = order.getDrugName();
+            regimenType = createRegimenType(pepfarID, visitDate, regimenCoding, description, stopDate, regimenTypeCoding);
+        }
+        if (order.getConceptID() == 1594) { // INH CONCEPT ID
+            regimenCoding = "H";
+            regimenTypeCoding = INH_REGIMEN_TYPE_CODE;
+            visitDate = order.getStartDate();
+            stopDate = order.getStopDate();
+            pepfarID = order.getPepfarID();
+            description = order.getDrugName();
+            regimenType = createRegimenType(pepfarID, visitDate, regimenCoding, description, stopDate, regimenTypeCoding);
+        }
+        return regimenType;
+    }
+
+    public boolean isValidARV(String conceptStr) {
+        boolean ans = false;
+        Integer[] arvConceptIDs = {953, 956, 952, 955, 960, 1186, 959, 1213, 1187, 1188, 957, 7777942, 7778040, 23, 1184,
+            1219, 7778238, 7778239, 7777817, 1211, 7778240, 7778159, 1226, 1224, 1223, 7778241,
+            1232, 1233, 7778242, 7778243, 7778244, 7778245, 7778246, 7778247, 7777880, 7777919,
+            7777918, 7777921, 7777920, 1225, 1220, 17, 1222, 7778502, 7778503, 1533, 598, 7778849,
+            1191, 7778830};
+        String[] arvConceptIDStr = new String[arvConceptIDs.length];
+        for (int i = 0; i < arvConceptIDs.length; i++) {
+            arvConceptIDStr[i] = String.valueOf(arvConceptIDs[i]);
+        }
+        for(String ele: arvConceptIDStr){
+            if(StringUtils.contains(ele, conceptStr)){
+                ans=true;
+            }
+        }
+        return ans;
+    }
+
+    public RegimenType createRegimenTypeARV(model.datapump.DrugOrder order) {
+        RegimenType regimenType = null;
+        String codedDrug="";
+        String regimenCoding="";
+        codedDrug=codeDrugs(order.getDrugName());
+        /*
+           RegimenType
+           -VisitID
+           -VisitDate
+           -ReasonForRegimenSwitchSubs
+           -PrescribedRegimen
+           -PrescribedRegimenTypeCode
+           -PrescribedRegimenLineCode
+           -PrescribedRegimenDuration
+           -PrescribedRegimenDispensedDate
+           -DateRegimenStarted
+           -DateRegimenStartedDD
+           -DateRegimenStartedMM
+           -DateRegimenStartedYYYY
+           -DateRegimenEnded
+           -DateRegimenEndedDD
+           -DateRegimenEndedMM
+           -DateRegimenEndedYYYY
+           -PrescribedRegimenInitialIndicator
+           -PrescribedRegimenCurrentIndicator
+           -TypeOfPreviousExposureCode
+           -PoorAdherenceIndicator
+           -ReasonForPoorAdherence
+           -ReasonRegimenEndedCode
+           -SubstitutionIndicator
+           -SwitchIndicator
+         */
+        return regimenType;
+    }
+
+    public List<RegimenType> constructRegimenTypeListARV(Demographics pts, List<model.datapump.DrugOrder> drugOrderList) throws DatatypeConfigurationException {
+        List<RegimenType> regimenTypeList = new ArrayList<RegimenType>();
+        RegimenType regimenType=null;
+        for(model.datapump.DrugOrder order : drugOrderList){
+            if(isValidARV(order.getDrugName())){
+                regimenType=createRegimenTypeARV(order);
+                regimenTypeList.add(regimenType);
+            }
+        }
+        return regimenTypeList;
+    }
+
+    public String codeConceptString(String conceptString) {
+        String code = "";
+        if (StringUtils.isNotEmpty(conceptString)) {
+            if (StringUtils.contains(code, code)) {
+                
+            }
+        }
+        return code;
     }
 
     public RegimenType extractARVRegimens(List<model.datapump.Obs> obsList, Demographics pts, Date visitDate) throws DatatypeConfigurationException {
@@ -674,6 +879,46 @@ public class NDRPharmacyDictionary {
             stopDate = NDRCommonUtills.calculateStopDate(visitDate, duration, durationUnit);
         }
         return stopDate;
+    }
+
+    public RegimenType createRegimenType(String pepfarID, Date visitDate, String regimenCoding, String description, Date stopDate, String regimenTypeCode) throws DatatypeConfigurationException {
+        Calendar cal = Calendar.getInstance();
+        String month = "", year = "", day = "";
+        RegimenType regimenType = new RegimenType();
+        String visitID = NDRCommonUtills.formatDateYYYYMMDD(visitDate) + "-" + pepfarID;
+        regimenType.setVisitID(visitID);
+        regimenType.setVisitDate(getXmlDate(visitDate));
+        regimenType.setPrescribedRegimenDispensedDate(getXmlDate(visitDate));
+        regimenType.setPrescribedRegimenTypeCode(regimenTypeCode);
+        CodedSimpleType cst = new CodedSimpleType();
+        cst.setCode(regimenCoding);
+        cst.setCodeDescTxt(description);
+        regimenType.setPrescribedRegimen(cst);
+        cal.setTime(visitDate);
+        month = StringUtils.leftPad(String.valueOf(cal.get(Calendar.MONTH) + 1), 2, "0");
+        year = String.valueOf(cal.get(Calendar.YEAR));
+        day = StringUtils.leftPad(String.valueOf(cal.get(Calendar.DAY_OF_MONTH)), 2, "0");
+        regimenType.setDateRegimenStarted(getXmlDate(visitDate));
+        regimenType.setDateRegimenStartedDD(day);
+        regimenType.setDateRegimenStartedMM(month);
+        regimenType.setDateRegimenStartedYYYY(year);
+        regimenType.setDateRegimenEnded(getXmlDate(stopDate));
+        cal = Calendar.getInstance();
+        cal.setTime(stopDate);
+        month = StringUtils.leftPad(String.valueOf(cal.get(Calendar.MONTH) + 1), 2, "0");
+        year = String.valueOf(cal.get(Calendar.YEAR));
+        day = StringUtils.leftPad(String.valueOf(cal.get(Calendar.DAY_OF_MONTH)), 2, "0");
+        regimenType.setDateRegimenEndedDD(day);
+        regimenType.setDateRegimenEndedMM(month);
+        regimenType.setDateRegimenEndedYYYY(year);
+        DateTime startDateTime = new DateTime(visitDate);
+        DateTime endDateTime = new DateTime(stopDate);
+        Days days = Days.daysBetween(startDateTime, endDateTime);
+        int daysVal = days.getDays();
+        String regimenDuration = String.valueOf(daysVal);
+        regimenType.setPrescribedRegimenDuration(regimenDuration);
+        return regimenType;
+
     }
 
     public RegimenType createRegimenType(String pepfarID, Date visitDate, String regimenCoding, String description, Date stopDate, int durationDays, String regimenTypeCode) throws DatatypeConfigurationException {
