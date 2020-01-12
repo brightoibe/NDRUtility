@@ -31,118 +31,125 @@ import util.NDRCommonUtills;
  * @author The Bright
  */
 public class NDRClinicalDictionary {
-    private Map<Integer,String> hivEncounterTypeDictionary=new HashMap<Integer,String>();
+
+    private Map<Integer, String> hivEncounterTypeDictionary = new HashMap<Integer, String>();
     private NDRPharmacyDictionary pharmacyDictionary;
-    public NDRClinicalDictionary(){
-        pharmacyDictionary=new NDRPharmacyDictionary();
+
+    public NDRClinicalDictionary() {
+        pharmacyDictionary = new NDRPharmacyDictionary();
         loadDictionary();
     }
-    private void loadDictionary(){
+
+    private void loadDictionary() {
         loadHIVEncounterDictionary();
     }
-     public void loadHIVEncounterDictionary() {
+
+    public void loadHIVEncounterDictionary() {
         hivEncounterTypeDictionary = new HashMap<Integer, String>();
 
         /* EDD AND PMTCT LINK    */
-        hivEncounterTypeDictionary.put(165048, "P");
-        hivEncounterTypeDictionary.put(165049, "PMTCT");
-        hivEncounterTypeDictionary.put(165047, "NP");
-        //hivEncounterTypeDictionary.put(13, "NK");
+        hivEncounterTypeDictionary.put(47, "P");//Pregnant
+        hivEncounterTypeDictionary.put(1259, "PMTCT");//ON PMTCT
+        hivEncounterTypeDictionary.put(7777870, "NP");// Not Pregnant
+        hivEncounterTypeDictionary.put(13, "NK");// Unknown
 
         /*  FAMILY PLANNING CODE      */
-        hivEncounterTypeDictionary.put(1, "FP");// True
-        hivEncounterTypeDictionary.put(0, "NOFP");// False
+        hivEncounterTypeDictionary.put(1739, "FP");// True
+        hivEncounterTypeDictionary.put(1740, "NOFP");// False
 
         /*  FAMILY PLANNING METHOD */
-        hivEncounterTypeDictionary.put(190, "FP1");// Condoms
+        hivEncounterTypeDictionary.put(280, "FP1");// Condoms
         hivEncounterTypeDictionary.put(311, "FP2");// Oral Contraceptives pills
         hivEncounterTypeDictionary.put(405, "FP3");// Injectable/Implantable
-        //hivEncounterTypeDictionary.put(408, "FP4");// Cervical Cap
-        hivEncounterTypeDictionary.put(5279, "FP5"); // Intrauterine device
-        hivEncounterTypeDictionary.put(1489, "FP6");// Vasectomy
-        hivEncounterTypeDictionary.put(5622, "FP7");// Others
+        hivEncounterTypeDictionary.put(408, "FP4");// Diaphram
+        hivEncounterTypeDictionary.put(407, "FP5"); // Intrauterine device
+        hivEncounterTypeDictionary.put(7777863, "FP6");// Vasectomy
+        hivEncounterTypeDictionary.put(33, "FP7");// Others
 
         /* FUNCTIONAL STATUS */
-        hivEncounterTypeDictionary.put(162750, "W");
-        hivEncounterTypeDictionary.put(160026, "A");
-        hivEncounterTypeDictionary.put(162752, "B");
+        hivEncounterTypeDictionary.put(1009, "W");
+        hivEncounterTypeDictionary.put(1010, "A");
+        hivEncounterTypeDictionary.put(1012, "B");
+
         /* DEVELOPMENTAL STATUS */
         //hivEncounterTypeDictionary.put(1114, "W");
         //hivEncounterTypeDictionary.put(1115, "A");
         //hivEncounterTypeDictionary.put(1089, "B");
 
         /* WHO STAGING */
-        hivEncounterTypeDictionary.put(1204, "1");
-        hivEncounterTypeDictionary.put(1205, "2");
-        hivEncounterTypeDictionary.put(1206, "3");
-        hivEncounterTypeDictionary.put(1207, "4");
+        hivEncounterTypeDictionary.put(7777928, "1");
+        hivEncounterTypeDictionary.put(7777925, "2");
+        hivEncounterTypeDictionary.put(7777927, "3");
+        hivEncounterTypeDictionary.put(7777926, "4");
 
         /* TB STATUS */
-        hivEncounterTypeDictionary.put(1660, "1");//No sign or symptoms of disease
-        hivEncounterTypeDictionary.put(142177, "2");//Disease suspected
-        hivEncounterTypeDictionary.put(166042, "3");//Currently on INH Prophylaxis
-        hivEncounterTypeDictionary.put(1662, "4");// On treatment for disease
-        hivEncounterTypeDictionary.put(1661, "5");// TB Positive not on drugs
+        hivEncounterTypeDictionary.put(871, "1");//No sign or symptoms of disease
+        hivEncounterTypeDictionary.put(870, "2");//Disease suspected
+        hivEncounterTypeDictionary.put(868, "3");//Currently on INH Prophylaxis
+        hivEncounterTypeDictionary.put(872, "4");// On treatment for disease
+        hivEncounterTypeDictionary.put(7777924, "5");// TB Positive not on drugs
 
         /* OTHER OI PROBLEMS */
-        hivEncounterTypeDictionary.put(117543, "1");//Herpes Zoster
-        hivEncounterTypeDictionary.put(114100, "2");//Pneumonia
-        hivEncounterTypeDictionary.put(119566, "3");//Dementia
-        hivEncounterTypeDictionary.put(5340, "4");//Thrush
-        hivEncounterTypeDictionary.put(140238, "5");//Fever
-        hivEncounterTypeDictionary.put(143264, "6");//Cough
+        hivEncounterTypeDictionary.put(1019, "1");//Herpes Zoster
+        hivEncounterTypeDictionary.put(1030, "2");//Pneumonia
+        hivEncounterTypeDictionary.put(1046, "3");//Dementia
+        hivEncounterTypeDictionary.put(7777838, "4");//Thrush
+        hivEncounterTypeDictionary.put(201, "5");//Fever
+        hivEncounterTypeDictionary.put(194, "6");//Cough
 
         /* NOTED SIDE EFFECTS */
-        hivEncounterTypeDictionary.put(133473, "1");//Nausea and Vomiting
-        hivEncounterTypeDictionary.put(139084, "2");//Headache/confusion
-        hivEncounterTypeDictionary.put(116743, "3");//Insomnia/Bad dreams
-        hivEncounterTypeDictionary.put(5226, "4");//Weakness
-        hivEncounterTypeDictionary.put(165767, "5");//Bleeding
-        hivEncounterTypeDictionary.put(512, "6");//Rash
-        hivEncounterTypeDictionary.put(165052, "7");//Fat accumulation or loss
-        hivEncounterTypeDictionary.put(121629, "8");// Anemia
-        hivEncounterTypeDictionary.put(165053, "9");//Drainage of liquor
-        hivEncounterTypeDictionary.put(125886, "10");// Steven Johnson syndrome
-        hivEncounterTypeDictionary.put(138291, "11");// Hyperglycemia
+        hivEncounterTypeDictionary.put(706, "1");//Nausea and Vomiting
+        hivEncounterTypeDictionary.put(196, "2");//Headache/confusion
+        hivEncounterTypeDictionary.put(1714, "3");//Insomnia/Bad dreams
+        hivEncounterTypeDictionary.put(573, "4");//Weakness
+        hivEncounterTypeDictionary.put(557, "5");//Bleeding
+        hivEncounterTypeDictionary.put(181, "6");//Rash
+        hivEncounterTypeDictionary.put(7777791, "7");//Fat accumulation or loss
+        hivEncounterTypeDictionary.put(671, "8");// Anemia
+        hivEncounterTypeDictionary.put(7777872, "9");//Drainage of liquor
+        hivEncounterTypeDictionary.put(1715, "10");// Steven Johnson syndrome
+        hivEncounterTypeDictionary.put(7777787, "11");// Hyperglycemia
 
-        /* DRUG ADHERENCE */
-        hivEncounterTypeDictionary.put(165287, "G");
-        hivEncounterTypeDictionary.put(165289, "F");
-        hivEncounterTypeDictionary.put(165288, "P");
+        /* DRUG ADHERENCE (ARV,CTX,INH)*/
+        hivEncounterTypeDictionary.put(1398, "G");//Good
+        hivEncounterTypeDictionary.put(1485, "F");//Fair
+        hivEncounterTypeDictionary.put(1397, "P");//Poor
 
         /* WHY POOR FAIR DRUG ADHERENCE */
- /*hivEncounterTypeDictionary.put(899, "1");
-        hivEncounterTypeDictionary.put(1414, "2");
-        hivEncounterTypeDictionary.put(1415, "3");
-        hivEncounterTypeDictionary.put(1416, "4");
-        hivEncounterTypeDictionary.put(1417, "5");
-        hivEncounterTypeDictionary.put(983, "6");
-        hivEncounterTypeDictionary.put(7777775, "7");
-        hivEncounterTypeDictionary.put(44, "8");
-        hivEncounterTypeDictionary.put(48, "9");
-        hivEncounterTypeDictionary.put(900, "10");
-        hivEncounterTypeDictionary.put(1419, "11");
-        hivEncounterTypeDictionary.put(1421, "12");
-        hivEncounterTypeDictionary.put(1422, "13");
-        hivEncounterTypeDictionary.put(1423, "14");
-        hivEncounterTypeDictionary.put(1425, "15");*/
-        // code 16 was not availaible on the care card (VERIFY!)
-        //hivEncounterTypeDictionary.put(1424, "17");
+        hivEncounterTypeDictionary.put(1420, "17");//Afraid of/affected by drug side effects 
+        hivEncounterTypeDictionary.put(1417, "5");//Became pregnant 
+        hivEncounterTypeDictionary.put(1416, "4");//Busy/working/at school 
+        hivEncounterTypeDictionary.put(48, "9");//	 Cannot afford treatment 
+        hivEncounterTypeDictionary.put(1415, "3");//	 Change in routine/away from home 
+        hivEncounterTypeDictionary.put(1422, "13");//	 Did not understand how to take medication 
+        hivEncounterTypeDictionary.put(1424, "16");//	 Did not want to take medication 
+        hivEncounterTypeDictionary.put(7777776, "8");//	 Drugs not available 
+        hivEncounterTypeDictionary.put(1414, "2");//	 Fell asleep/slept through dose 
+        hivEncounterTypeDictionary.put(900, "10");//	 Felt better 
+        hivEncounterTypeDictionary.put(1421, "12");//Felt overwhelmed/depressed 
+        hivEncounterTypeDictionary.put(1419, "11");//	 Felt sick/bad 
+        hivEncounterTypeDictionary.put(899, "1");//	 Patient forgot 
+        hivEncounterTypeDictionary.put(983, "6");//	 Patient moved 
+        hivEncounterTypeDictionary.put(7777775, "7");//	 Ran out of medication 
+        hivEncounterTypeDictionary.put(1423, "14");//	 Stigma 
+        hivEncounterTypeDictionary.put(1425, "15");//	 Too many pills 
 
         /* COTRIM DOSE */
- /*hivEncounterTypeDictionary.put(1552, "CTX960");
-        hivEncounterTypeDictionary.put(1547, "CTX480");
-        hivEncounterTypeDictionary.put(7778548, "CTX240");// Mapped to Cotrim dispersible 120mg*/
+        hivEncounterTypeDictionary.put(7778519, "CTX960");// od Freq
+        hivEncounterTypeDictionary.put(7778520, "CTX480"); // bd Freq
+        hivEncounterTypeDictionary.put(7778522, "CTX240");// qds Freq need further consultation
+        hivEncounterTypeDictionary.put(7778521, "CTX240");// tds Freq need futher consultation
 
  /* INH DOSE */
- /*hivEncounterTypeDictionary.put(1546, "H"); // Verify
+       /*hivEncounterTypeDictionary.put(1546, "H"); // Verify
         hivEncounterTypeDictionary.put(1543, "H"); // Verify*/
 
  /* DRUG NAME */
  /* hivEncounterTypeDictionary.put(1594, "H");
         hivEncounterTypeDictionary.put(35, "H");*/
     }
-     public HIVEncounterType createHIVEncounter(Visit visit, Date artStartDate, List<Obs> obsList, ArrayList<DrugOrder> orders, ArrayList<Drugs> drugList) throws DatatypeConfigurationException {
+
+    public HIVEncounterType createHIVEncounter(Visit visit, Date artStartDate, List<Obs> obsList, ArrayList<DrugOrder> orders, ArrayList<Drugs> drugList) throws DatatypeConfigurationException {
         HIVEncounterType hivEncType = new HIVEncounterType();
         Date visitDate = visit.getVisitDate();
         LocalDate d2 = new LocalDate(new DateTime(visitDate));
@@ -175,11 +182,11 @@ public class NDRClinicalDictionary {
                 hivEncType.setNotedSideEffects(notedSideEffects);
             }
 
-            String reasonForPoorARVAdh=extractConceptCodes(7778843, obsList, hivEncounterTypeDictionary);// Reason for poor ARV
+            String reasonForPoorARVAdh = extractConceptCodes(7778843, obsList, hivEncounterTypeDictionary);// Reason for poor ARV
             hivEncType.setWhyPoorFairARVDrugAdherence(reasonForPoorARVAdh);
-            String reasonForPoorCTXAdh=extractConceptCodes(7778844, obsList, hivEncounterTypeDictionary);// Reason for poor Cotrimoxazole
+            String reasonForPoorCTXAdh = extractConceptCodes(7778844, obsList, hivEncounterTypeDictionary);// Reason for poor Cotrimoxazole
             hivEncType.setWhyPoorFairCotrimoxazoleDrugAdherence(reasonForPoorCTXAdh);
-            String reasonForPoorINHAdh=extractConceptCodes(7778845, obsList, hivEncounterTypeDictionary);// Reason for poor INH
+            String reasonForPoorINHAdh = extractConceptCodes(7778845, obsList, hivEncounterTypeDictionary);// Reason for poor INH
             hivEncType.setWhyPoorFairINHDrugAdherence(reasonForPoorINHAdh);
             String systolic = "", diastolic = "", bp = "";
             Obs systolicObs = NDRCommonUtills.extractConcept(84, obsList);//Systolic Blood Pressure
@@ -265,10 +272,10 @@ public class NDRClinicalDictionary {
                         value_coded = obs.getValueCoded();
                         hivEncType.setNotedSideEffects(hivEncounterTypeDictionary.get(value_coded));
                         break;
-                    */
+                     */
                     case 7778706: // Adult 1st line ARV regimen
                         regimen = obs.getVariableValue();
-                        value_coded=obs.getValueCoded();
+                        value_coded = obs.getValueCoded();
                         cst = new CodedSimpleType();
                         //cst.setCode(pharmacyDictionary.getRegimenCode(regimen, 164506));
                         cst.setCode(pharmacyDictionary.getRegimenConceptNDRCode(value_coded));
@@ -277,7 +284,7 @@ public class NDRClinicalDictionary {
                         break;
                     case 7778707:// Adult 2nd line ARV regimen
                         regimen = obs.getVariableValue();
-                        value_coded=obs.getValueCoded();
+                        value_coded = obs.getValueCoded();
                         cst = new CodedSimpleType();
                         //cst.setCode(pharmacyDictionary.getRegimenCode(regimen, 164513));
                         cst.setCode(pharmacyDictionary.getRegimenConceptNDRCode(value_coded));
@@ -287,7 +294,7 @@ public class NDRClinicalDictionary {
                         break;
                     case 7778838:// Adult 3rd Line ARV Regimen
                         regimen = obs.getVariableValue();
-                        value_coded=obs.getValueCoded();
+                        value_coded = obs.getValueCoded();
                         cst = new CodedSimpleType();
                         //cst.setCode(pharmacyDictionary.getRegimenCode(regimen, 164513));
                         cst.setCode(pharmacyDictionary.getRegimenConceptNDRCode(value_coded));
@@ -298,7 +305,7 @@ public class NDRClinicalDictionary {
                         break;
                     case 7778731: // Child 1st line ARV regimen
                         regimen = obs.getVariableValue();
-                        value_coded=obs.getValueCoded();
+                        value_coded = obs.getValueCoded();
                         cst = new CodedSimpleType();
                         //cst.setCode(pharmacyDictionary.getRegimenCode(regimen, 164507));
                         //cst.setCode(getRegimenCode(regimen));
@@ -309,7 +316,7 @@ public class NDRClinicalDictionary {
                         break;
                     case 7778741: // Child 2nd line ARV regimen
                         regimen = obs.getVariableValue();
-                        value_coded=obs.getValueCoded();
+                        value_coded = obs.getValueCoded();
                         cst = new CodedSimpleType();
                         //cst.setCode(pharmacyDictionary.getRegimenCode(regimen, 164514));
                         //cst.setCode(getRegimenCode(regimen));
@@ -320,7 +327,7 @@ public class NDRClinicalDictionary {
                         break;
                     case 7778742: //Child 3rd Line ARV Regimen
                         regimen = obs.getVariableValue();
-                        value_coded=obs.getValueCoded();
+                        value_coded = obs.getValueCoded();
                         cst = new CodedSimpleType();
                         //cst.setCode(pharmacyDictionary.getRegimenCode(regimen, 164514));
                         //cst.setCode(getRegimenCode(regimen));
@@ -333,17 +340,13 @@ public class NDRClinicalDictionary {
                         value_coded = obs.getValueCoded();
                         hivEncType.setARVDrugAdherence(hivEncounterTypeDictionary.get(value_coded));
                         break;
-                    /*case  7778843:
-                        value_coded = obs.getValueCoded();
-                        hivEncType.setWhyPoorFairARVDrugAdherence(hivEncounterTypeDictionary.get(value_coded));
-                        break;*/
- /*                   case 7778203:
+                    case 7778846:
                         value_coded = obs.getValueCoded();
                         cst = new CodedSimpleType();
                         cst.setCode(hivEncounterTypeDictionary.get(value_coded));
-                        cst.setCodeDescTxt("Cotrimoxazole " + obs.getVariableValue());
+                        cst.setCodeDescTxt(hivEncounterTypeDictionary.get(value_coded));
                         hivEncType.setCotrimoxazoleDose(cst);
-                        break;*/
+                        break;
                     case 7777875:
                         value_coded = obs.getValueCoded();
                         hivEncType.setCotrimoxazoleAdherence(hivEncounterTypeDictionary.get(value_coded));
@@ -352,14 +355,14 @@ public class NDRClinicalDictionary {
                         value_coded = obs.getValueCoded();
                         hivEncType.setWhyPoorFairCotrimoxazoleDrugAdherence(hivEncounterTypeDictionary.get(value_coded));
                         break;*/
- /*                  case 7778202:
+                   case  7778847:
                         value_coded = obs.getValueCoded();
                         cst = new CodedSimpleType();
                         cst.setCode(hivEncounterTypeDictionary.get(value_coded));
-                        cst.setCodeDescTxt("Isoniazid " + obs.getVariableValue());
+                        cst.setCodeDescTxt("Isoniazid");
                         hivEncType.setINHDose(cst);
-                        break;*/
-                    case  7777876:
+                        break;
+                    case 7777876:
                         value_coded = obs.getValueCoded();
                         hivEncType.setINHAdherence(hivEncounterTypeDictionary.get(value_coded));
                         break;
@@ -367,11 +370,11 @@ public class NDRClinicalDictionary {
                         value_coded = obs.getValueCoded();
                         hivEncType.setWhyPoorFairINHDrugAdherence(hivEncounterTypeDictionary.get(value_coded));
                         break;*/
-                    /*case 5096:
+ /*case 5096:
                         value_datetime = obs.getValueDate();
                         hivEncType.setNextAppointmentDate(getXmlDate(value_datetime));
                         break;*/
-                    /*case 7777821:
+ /*case 7777821:
                         value_coded = obs.getValueCoded();
                         if (hivEncType.getNextAppointmentDate() == null) {
                             hivEncType.setNextAppointmentDate(getXmlDate(getNextAppointmentDate(obs.getVisitDate(), value_coded)));
@@ -392,7 +395,7 @@ public class NDRClinicalDictionary {
 
             }
 
-           /* PatientRegimen rgm = null;
+            /* PatientRegimen rgm = null;
             String openmrsARVRegimen = "";
             String cotrimDose = "";
             String inhDose = "";
@@ -414,7 +417,7 @@ public class NDRClinicalDictionary {
                     }
                 }
             }*/
-           /*for (Drugs drg : drugList) {
+ /*for (Drugs drg : drugList) {
                 drugName = drg.getDrugName();
                 strength = drg.getStrength();
                 otherStrength = drg.getOtherStrength();
@@ -460,12 +463,12 @@ public class NDRClinicalDictionary {
                 }
 
             }*/
-
         }
 
         return hivEncType;
     }
-      public String extractConceptCodes(int conceptID, List<Obs> obsList, Map<Integer, String> answerMap) {
+
+    public String extractConceptCodes(int conceptID, List<Obs> obsList, Map<Integer, String> answerMap) {
         String codedAnswer = "";
         String val = "";
         ArrayList<String> valList = new ArrayList<String>();
@@ -480,6 +483,5 @@ public class NDRClinicalDictionary {
         codedAnswer = StringUtils.join(valList, "|");
         return codedAnswer;
     }
-
 
 }

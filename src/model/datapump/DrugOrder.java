@@ -13,6 +13,34 @@ import java.util.Date;
 public class DrugOrder extends model.datapump.Drugs{
 
     /**
+     * @return the drugID
+     */
+    public int getDrugID() {
+        return drugID;
+    }
+
+    /**
+     * @param drugID the drugID to set
+     */
+    public void setDrugID(int drugID) {
+        this.drugID = drugID;
+    }
+
+    /**
+     * @return the discontinueReason
+     */
+    public int getDiscontinueReason() {
+        return discontinueReason;
+    }
+
+    /**
+     * @param discontinueReason the discontinueReason to set
+     */
+    public void setDiscontinueReason(int discontinueReason) {
+        this.discontinueReason = discontinueReason;
+    }
+
+    /**
      * @return the providerID
      */
     public int getProviderID() {
@@ -50,6 +78,7 @@ public class DrugOrder extends model.datapump.Drugs{
     /**
      * @param formID the formID to set
      */
+    @Override
     public void setFormID(int formID) {
         this.formID = formID;
     }
@@ -66,6 +95,8 @@ public class DrugOrder extends model.datapump.Drugs{
     private Date startDate;
     private Date stopDate;
     private String drugName;
+    private int drugID;
+    private int discontinueReason;
     private String frequency;
     private String drugDose;
     private String enteredBy;
