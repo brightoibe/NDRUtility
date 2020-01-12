@@ -36,6 +36,8 @@ public class NDRPharmacyDictionary {
     private Map<String, String> localDrugCodeMapping = new HashMap<String, String>();
     private Map<String, String> arvDrugCodingMapping=new HashMap<String,String>();
     public Map<Integer, String> ndrCodedValues = new HashMap<Integer, String>();
+    
+    
 
     public NDRPharmacyDictionary() {
         loadDictionaries();
@@ -65,7 +67,24 @@ public class NDRPharmacyDictionary {
         ndrCodedValues.put(165942, "PEP");
         ndrCodedValues.put(165943, "PEPNONOCC");
         ndrCodedValues.put(165685, "PMTCT");
-        //ndrCodedValues.put(	,TB);
+        //Regimen Concepts
+        ndrCodedValues.put(7777815, "1k");//	TDF/3TC 
+        ndrCodedValues.put(7777816, "2g");//	FTC/ATV/r 
+        ndrCodedValues.put(7777817, "2g");//	LPV/r 
+        ndrCodedValues.put(7777818, "2f");//	AZT/3TC/ATVr 
+        ndrCodedValues.put(7777811, "1a");//	AZT/3TC/EFV 
+        ndrCodedValues.put(7777810, "1b");//	AZT/3TC/NVP 
+        ndrCodedValues.put(1227, "1e");//	TDF/3TC/EFV 
+        ndrCodedValues.put(7777812, "1f");//	TDF/3TC/NVP 
+        ndrCodedValues.put(7777813, "1g");//	AZT/3TC/ABC 
+        ndrCodedValues.put(7777814, "1h");//	AZT/3TC/TDF 
+        ndrCodedValues.put(7777880, "5b");//	AZT/3TC/LPVr
+        ndrCodedValues.put(7777916, "4d");//	ABC/3TC/NVP
+        ndrCodedValues.put(7777922, "5d");//	d4T/3TC/NVP
+        ndrCodedValues.put(7777919, "5a");//	ABC/3TC/LPV/r 
+        ndrCodedValues.put(7777918, "5d");//	ddi/3TC/NVP 
+        ndrCodedValues.put(7777920, "5e");//	ABC/3TC/ddi 
+        ndrCodedValues.put(7777921, "5c");//	d4T/3TC/LPV/r 
 
     }
     public void loadARVDrugCoding(){
@@ -702,7 +721,10 @@ public class NDRPharmacyDictionary {
         }
         return coding;
     }
-
+    public String getRegimenConceptNDRCode(int valueCoded){
+        String code=ndrCodedValues.get(valueCoded);
+        return code;
+    }
     public boolean isValidOIDrug(String drugName) {
         boolean ans = false;
         if (localDrugCodeMapping.containsKey(drugName)) {

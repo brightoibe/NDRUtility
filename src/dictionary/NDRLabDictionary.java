@@ -58,39 +58,39 @@ public class NDRLabDictionary {
         labTestUnitDescription.put("93", "GramsPerDeciLiter,U/L");
     }
     private void loadLabTestUnitDictionary() {
-        labTestUnits.put(88, "48");
-        labTestUnits.put(315, "60");
-        labTestUnits.put(1153, "398");
-        labTestUnits.put(365, "311");
-        labTestUnits.put(331, "25");
-        labTestUnits.put(1717, "48");
-        labTestUnits.put(1168, "398");
-        labTestUnits.put(366, "311");
-        labTestUnits.put(1169, "48");
-        labTestUnits.put(1718, "398");
-        labTestUnits.put(367, "311");
-        labTestUnits.put(1716, "48");
-        labTestUnits.put(1170, "398");
-        labTestUnits.put(1531, "311");
-        labTestUnits.put(1719, "48");
-        labTestUnits.put(1156, "398");
-        labTestUnits.put(451, "257");
-        labTestUnits.put(1150, "48");
-        labTestUnits.put(7777906, "398");
-        labTestUnits.put(1528, "257");
-        labTestUnits.put(7777907, "398");
-        labTestUnits.put(228, "136");
-        labTestUnits.put(1529, "93");
-        labTestUnits.put(375, "25");
-        labTestUnits.put(1175, "311");
-        labTestUnits.put(1159, "311");
-        labTestUnits.put(313, "257");
-        labTestUnits.put(308, "93");
-        labTestUnits.put(309, "93");
-        labTestUnits.put(1176, "311");
-        labTestUnits.put(1530, "93");
-        labTestUnits.put(329, "398");
-        labTestUnits.put(332, "25");
+        labTestUnits.put(88, "48");//CD4 COUNT
+        labTestUnits.put(315, "60");// Viral Load
+        labTestUnits.put(1153, "398"); // CD4 %
+        labTestUnits.put(365, "311");// Na+
+        labTestUnits.put(331, "25");// WBC
+        labTestUnits.put(1717, "48");// Lymphocytes
+        labTestUnits.put(1168, "398");// Lymphocytes %
+        labTestUnits.put(366, "311");// Serum Chloride
+        labTestUnits.put(1169, "48");// Monocytes
+        labTestUnits.put(1718, "398");// Monocytes %
+        labTestUnits.put(367, "311");// HC03 Serum Carbon Dioxide
+        labTestUnits.put(1716, "48");// Neutrophils
+        labTestUnits.put(1170, "398");// Neutrophils %
+        labTestUnits.put(1531, "311");// Urea
+        labTestUnits.put(1719, "48");// Eosinophils
+        labTestUnits.put(1156, "398");//Eosinophils %
+        labTestUnits.put(451, "257");//Serum Glucose
+        labTestUnits.put(1150, "48");//Basophils
+        labTestUnits.put(7777906, "398");//Basophils %
+        labTestUnits.put(1528, "257");//T.Bilirubin
+        labTestUnits.put(7777907, "398");//Hb(PCV)%
+        labTestUnits.put(228, "136");//Hemoglobin(HB/PCV)
+        labTestUnits.put(1529, "93"); // Amylase
+        labTestUnits.put(375, "25"); // Platelets count
+        labTestUnits.put(1175, "311"); // Total Cholesterol
+        labTestUnits.put(1159, "311"); // HDL
+        labTestUnits.put(313, "257");// Creatinine
+        labTestUnits.put(308, "93"); // AST
+        labTestUnits.put(309, "93"); // ALT/SGPT
+        labTestUnits.put(1176, "311");// Triglycerides
+        labTestUnits.put(1530, "93");// Alk.Phosphatase
+        //labTestUnits.put(329, "398");// 
+        labTestUnits.put(332, "25");//RBC
     }
 
     public LaboratoryReportType createLaboratoryReportType(Visit visit, ArrayList<Obs> obsList, Date artStartDate) throws DatatypeConfigurationException {
@@ -112,37 +112,47 @@ public class NDRLabDictionary {
         labReport.setVisitDate(getXmlDate(visitDate));
         //labReport.setReportedBy(providerName);
         labReport.setClinician(providerName);
-        labReport.setCollectionDate(getXmlDate(visitDate));
+        Obs sampleCollectionDateObs=NDRCommonUtills.extractConcept(99, obsList);//Specimen collection date
+        if(sampleCollectionDateObs!=null){
+            labReport.setCollectionDate(getXmlDate(sampleCollectionDateObs.getValueDate()));
+        }else{
+            labReport.setCollectionDate(getXmlDate(visitDate));
+        }
+        
         //Obs labIDObs = extractConcept(7777905, obsList);
         //if (labIDObs != null) {
         //   labReport.setLaboratoryTestIdentifier(labIDObs.getVariableValue());
         //}
         labReport.setLaboratoryTestIdentifier(visit.getVisitID());
-        Obs reportedByObs = NDRCommonUtills.extractConcept(164982, obsList);
+        Obs reportedByObs = NDRCommonUtills.extractConcept(7777905, obsList);//Laboratory Registration No
         if (reportedByObs != null) {
             labReport.setReportedBy(reportedByObs.getVariableValue());
         }
-        Obs checkedByObs = NDRCommonUtills.extractConcept(164983, obsList);
+        Obs checkedByObs = NDRCommonUtills.extractConcept(7778306, obsList);// Checked by
         if (checkedByObs != null) {
             labReport.setCheckedBy(checkedByObs.getVariableValue());
         }
-        Obs baselineFlag = NDRCommonUtills.extractConcept(164181, obsList);
+        Obs baselineFlag = NDRCommonUtills.extractConcept(1537, obsList);// Visit Type
         if (baselineFlag != null) {
             value_coded = baselineFlag.getValueCoded();
-            if (value_coded == 164180) {
+            if (value_coded == 1535) {// Initial
                 labReport.setBaselineRepeatCode("B");
-            } else if (value_coded == 160530) {
+            } else if (value_coded == 1536) { // Follow-up
                 labReport.setBaselineRepeatCode("R");
             }
         }
-        Obs obsOrderedDate = NDRCommonUtills.extractConcept(164989, obsList);
+        /*Obs obsOrderedDate = NDRCommonUtills.extractConcept(164989, obsList);
         if (obsOrderedDate != null) {
             orderedDate = obsOrderedDate.getValueDate();
-        }
-        Obs obsReportedDate = NDRCommonUtills.extractConcept(165414, obsList);
+        }*/
+        orderedDate=visitDate; // Ordered Date does not exist as a concept
+        
+        /*Obs obsReportedDate = NDRCommonUtills.extractConcept(165414, obsList);
         if (obsReportedDate != null) {
             reportedDate = obsReportedDate.getValueDate();
-        }
+        }*/
+        reportedDate=visitDate;// Reported Date same as Visit Date does not exist as a conccept
+        
         DateTime d1, d2;
         String artStatus = null;
         if (artStartDate != null) {
@@ -224,36 +234,36 @@ public class NDRLabDictionary {
     public void loadLabTestDictionary() {
         labTestDictionary = new HashMap<Integer, String>();
 
-        labTestDictionary.put(165923, "2");//ALT/SGPT
+        labTestDictionary.put(309, "2");//ALT/SGPT
         //labTestDictionary.put(1529, "3");OpenMRS
         //labTestDictionary.put(1531, "8");OpenMRS
-        labTestDictionary.put(654, "4");//AST
-        labTestDictionary.put(655, "7");//T.Bilirubin
-        labTestDictionary.put(5497, "11");//CD4 COUNT
-        labTestDictionary.put(1319, "12");//LYMPHOCYTES
-        labTestDictionary.put(1022, "13");//Neutrophils
-        labTestDictionary.put(1134, "16");//Serum Chloride
-        labTestDictionary.put(1006, "17");//Total Cholesterol
-        labTestDictionary.put(1007, "18");//HDL
-        labTestDictionary.put(1008, "19");//LDL
-        labTestDictionary.put(164364, "21");//Creatinine
-        labTestDictionary.put(160053, "31");//Serum Glucose
+        labTestDictionary.put(308, "4");//AST
+        labTestDictionary.put(1528, "7");//T.Bilirubin
+        labTestDictionary.put(88, "11");//CD4 COUNT
+        labTestDictionary.put(1717, "12");//LYMPHOCYTES
+        labTestDictionary.put(1716, "13");//Neutrophils
+        labTestDictionary.put(366, "16");//Serum Chloride
+        labTestDictionary.put(1175, "17");//Total Cholesterol
+        labTestDictionary.put(1159, "18");//HDL
+        labTestDictionary.put(1167, "19");//LDL
+        labTestDictionary.put(313, "21");//Creatinine
+        labTestDictionary.put(317, "31");//Serum Glucose
         //labTestDictionary.put(805, "32");//Urine glucose dipstick
-        labTestDictionary.put(165920, "34");//HB/PCV
-        labTestDictionary.put(165395, "35");//HB (PCV)%
+        labTestDictionary.put(228, "34");//HB/PCV
+        labTestDictionary.put(7777907, "35");//HB (PCV)%
         //labTestDictionary.put(391, "35");//HIV Test
-        labTestDictionary.put(159430, "42");//Hepatitis B Test - Qualitative
-        labTestDictionary.put(1325, "43");//Hepatitis C Test - Qualitative
+        labTestDictionary.put(1157, "42");//Hepatitis B Test - Qualitative
+        labTestDictionary.put(1158, "43");//Hepatitis C Test - Qualitative
         //labTestDictionary.put(338, "53"); //HIV DNA Polymerase Chain Reaction, Qualitative
-        labTestDictionary.put(785, "54");//Alk.Phosphatase
-        labTestDictionary.put(1133, "57");//Serum Potassium
-        labTestDictionary.put(45, "58");//Urine Pregnancy Test
-        labTestDictionary.put(165926, "59");//Total Protein
-        labTestDictionary.put(1132, "65");//Soduim
-        labTestDictionary.put(361, "71");//RPR
-        labTestDictionary.put(1009, "74");//Triglycerides
-        labTestDictionary.put(856, "80");//Viral Load
-        labTestDictionary.put(678, "81");//WBC
+        labTestDictionary.put(1530, "54");//Alk.Phosphatase
+        labTestDictionary.put(368, "57");//Serum Potassium
+        //labTestDictionary.put(45, "58");//Urine Pregnancy Test
+        //labTestDictionary.put(165926, "59");//Total Protein
+        labTestDictionary.put(365, "65");//Soduim
+        //labTestDictionary.put(361, "71");//RPR
+        labTestDictionary.put(1176, "74");//Triglycerides
+        labTestDictionary.put(315, "80");//Viral Load
+        labTestDictionary.put(331, "81");//WBC
         //labTestDictionary.put(391, "44");//HIV Test
         // labTestDictionary.put(451, "31");
 

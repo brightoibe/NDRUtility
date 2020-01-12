@@ -166,27 +166,27 @@ public class NDRClinicalDictionary {
         CodedSimpleType cst = null;
         int value_coded = 0;
         if (!obsList.isEmpty()) {
-            String signsAndSymptoms = extractConceptCodes(160170, obsList, hivEncounterTypeDictionary);//528
+            String signsAndSymptoms = extractConceptCodes(528, obsList, hivEncounterTypeDictionary);//SIGN/SYMPTOM NAME
             if (StringUtils.isNoneEmpty(signsAndSymptoms)) {
                 hivEncType.setOtherOIOtherProblems(signsAndSymptoms);
             }
-            String notedSideEffects = extractConceptCodes(159935, obsList, hivEncounterTypeDictionary);//1607
+            String notedSideEffects = extractConceptCodes(7777873, obsList, hivEncounterTypeDictionary);//Noted side effects
             if (StringUtils.isNoneEmpty(notedSideEffects)) {
                 hivEncType.setNotedSideEffects(notedSideEffects);
             }
 
-            //String reasonForPoorARVAdh=extractConceptCodes(7778453, obsList, hivEncounterTypeDictionary);
-            //hivEncType.setWhyPoorFairARVDrugAdherence(reasonForPoorARVAdh);
-            //String reasonForPoorCTXAdh=extractConceptCodes(7778454, obsList, hivEncounterTypeDictionary);
-            //hivEncType.setWhyPoorFairCotrimoxazoleDrugAdherence(reasonForPoorCTXAdh);
-            //String reasonForPoorINHAdh=extractConceptCodes(7778455, obsList, hivEncounterTypeDictionary);
-            //hivEncType.setWhyPoorFairINHDrugAdherence(reasonForPoorINHAdh);
+            String reasonForPoorARVAdh=extractConceptCodes(7778843, obsList, hivEncounterTypeDictionary);// Reason for poor ARV
+            hivEncType.setWhyPoorFairARVDrugAdherence(reasonForPoorARVAdh);
+            String reasonForPoorCTXAdh=extractConceptCodes(7778844, obsList, hivEncounterTypeDictionary);// Reason for poor Cotrimoxazole
+            hivEncType.setWhyPoorFairCotrimoxazoleDrugAdherence(reasonForPoorCTXAdh);
+            String reasonForPoorINHAdh=extractConceptCodes(7778845, obsList, hivEncounterTypeDictionary);// Reason for poor INH
+            hivEncType.setWhyPoorFairINHDrugAdherence(reasonForPoorINHAdh);
             String systolic = "", diastolic = "", bp = "";
-            Obs systolicObs = NDRCommonUtills.extractConcept(5085, obsList);//84
+            Obs systolicObs = NDRCommonUtills.extractConcept(84, obsList);//Systolic Blood Pressure
             if (systolicObs != null) {
                 systolic = systolicObs.getVariableValue();
             }
-            Obs diastolicObs = NDRCommonUtills.extractConcept(5086, obsList);//568
+            Obs diastolicObs = NDRCommonUtills.extractConcept(568, obsList);//Diastolic Blood Pressure
             if (diastolicObs != null) {
                 diastolic = diastolicObs.getVariableValue();
             }
@@ -197,46 +197,45 @@ public class NDRClinicalDictionary {
             for (Obs obs : obsList) {
                 conceptID = obs.getConceptID();
                 switch (conceptID) {
-                    case 5089://1734
+                    case 85:// Weight (Kg)
                         value_numeric = (int) Math.round(obs.getValueNumeric());
                         hivEncType.setWeight(value_numeric);
                         break;
-                    case 5090:
+                    case 571: // Height (cm)
                         value_numeric = (int) Math.round(obs.getValueNumeric());
                         hivEncType.setChildHeight(value_numeric);
                         break;
-                    case 5497:
+                    case 88:// CD4 Count
                         value_numeric = (int) Math.round(obs.getValueNumeric());
                         hivEncType.setCD4(value_numeric);
                         hivEncType.setCD4TestDate(getXmlDate(obs.getVisitDate()));
                         break;
-                    case 85:// investigate
+                    /*case 85:// investigate
                         value_numeric = (int) Math.round(obs.getValueNumeric());
                         hivEncType.setWeight(value_numeric);
-                        break;
-
-                    case 571:// Investigate
+                        break;*/
+                    /*case 571:// Investigate
                         value_numeric = (int) Math.round(obs.getValueNumeric());
                         hivEncType.setChildHeight(value_numeric);
-                        break;
-                    case 165050:
+                        break;*/
+                    case 7777871:
                         value_coded = obs.getValueCoded();
                         code = hivEncounterTypeDictionary.get(value_coded);
                         if (StringUtils.isNotEmpty(code)) {
                             hivEncType.setEDDandPMTCTLink(code);
                         }
                         break;
-                    case 165945:
+                    /*case 165945:
                         value_coded = obs.getValueCoded();
                         if (value_coded == 165685) {
                             hivEncType.setEDDandPMTCTLink("PMTCT");
                         }
-                        break;
-                    case 1434:
+                        break;*/
+                    case 575:// Pregnancy Status (For female patients from Adult/Ped Initial Clinical Form)
                         value_coded = obs.getValueCoded();
-                        if (value_coded == 1) {
+                        if (value_coded == 80) {
                             hivEncType.setEDDandPMTCTLink("P");
-                        } else if (value_coded == 0) {
+                        } else if (value_coded == 81) {
                             hivEncType.setEDDandPMTCTLink("NP");
                         }
                         break;

@@ -1491,7 +1491,7 @@ public class DataPumpDao implements model.datapump.DataAccess {
     public ArrayList<model.datapump.Obs> extractLabObs(List<model.datapump.Obs> obsList) {
         ArrayList<model.datapump.Obs> labObsList = new ArrayList<model.datapump.Obs>();
         for (model.datapump.Obs ele : obsList) {
-            if (ele.getFormID() == 67 || ele.getFormID() == 21) {
+            if (ele.getFormID() == 5 || ele.getFormID() == 3) {// Lab Request Form ID (3), Lab Results Form ID(5)
                 labObsList.add(ele);
             }
         }
@@ -1572,11 +1572,15 @@ public class DataPumpDao implements model.datapump.DataAccess {
     public ArrayList<model.datapump.Obs> extractClinicalObs(List<model.datapump.Obs> obsList) {
         ArrayList<model.datapump.Obs> clinicalObsList = new ArrayList<model.datapump.Obs>();
         //int[] cidArr={1734,1735,1733,85,571,84,568,575,265,1256,1741,1742,1013,860,862,528,861,864,865,866,1121,1122,1123,1124,88};
-        int[] fidArr = {22, 14, 21, 23, 20, 27};
+        // 8 - Care/ART Card Follow-up Page
+        // 1 - Adult Initial Clinical Evaluation Form
+        // 2 - Paediatric Initial Clinical Evaluation Form
+        // 5 - Laboratory Results Form
+        // 6 - Vital Signs
+        int[] fidArr = {8,1,2,5,6};
         for (model.datapump.Obs obs : obsList) {
             if (Arrays.binarySearch(fidArr, obs.getFormID()) != -1) {
                 clinicalObsList.add(obs);
-
             }
         }
         return clinicalObsList;
