@@ -265,13 +265,7 @@ public class NDRClinicalDictionary {
                         value_coded = obs.getValueCoded();
                         hivEncType.setNotedSideEffects(hivEncounterTypeDictionary.get(value_coded));
                         break;
-                        
-                     */
- /*                 case 88:
-                        value_numeric = (int) obs.getValueNumeric();
-                        hivEncType.setCD4(value_numeric);
-                        hivEncType.setCD4TestDate(getXmlDate(obs.getVisitDate()));
-                        break;*/
+                    */
                     case 164506: // Adult 1st line ARV regimen
                         regimen = obs.getVariableValue();
                         cst = new CodedSimpleType();
