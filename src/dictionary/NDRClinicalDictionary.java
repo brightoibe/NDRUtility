@@ -182,12 +182,12 @@ public class NDRClinicalDictionary {
                 hivEncType.setNotedSideEffects(notedSideEffects);
             }
 
-            String reasonForPoorARVAdh = extractConceptCodes(7778843, obsList, hivEncounterTypeDictionary);// Reason for poor ARV
-            hivEncType.setWhyPoorFairARVDrugAdherence(reasonForPoorARVAdh);
-            String reasonForPoorCTXAdh = extractConceptCodes(7778844, obsList, hivEncounterTypeDictionary);// Reason for poor Cotrimoxazole
-            hivEncType.setWhyPoorFairCotrimoxazoleDrugAdherence(reasonForPoorCTXAdh);
-            String reasonForPoorINHAdh = extractConceptCodes(7778845, obsList, hivEncounterTypeDictionary);// Reason for poor INH
-            hivEncType.setWhyPoorFairINHDrugAdherence(reasonForPoorINHAdh);
+            //String reasonForPoorARVAdh = extractConceptCodes(7778843, obsList, hivEncounterTypeDictionary);// Reason for poor ARV
+            //hivEncType.setWhyPoorFairARVDrugAdherence(reasonForPoorARVAdh);
+            //String reasonForPoorCTXAdh = extractConceptCodes(7778844, obsList, hivEncounterTypeDictionary);// Reason for poor Cotrimoxazole
+            //hivEncType.setWhyPoorFairCotrimoxazoleDrugAdherence(reasonForPoorCTXAdh);
+            //String reasonForPoorINHAdh = extractConceptCodes(7778845, obsList, hivEncounterTypeDictionary);// Reason for poor INH
+            //hivEncType.setWhyPoorFairINHDrugAdherence(reasonForPoorINHAdh);
             String systolic = "", diastolic = "", bp = "";
             Obs systolicObs = NDRCommonUtills.extractConcept(84, obsList);//Systolic Blood Pressure
             if (systolicObs != null) {
@@ -351,10 +351,10 @@ public class NDRClinicalDictionary {
                         value_coded = obs.getValueCoded();
                         hivEncType.setCotrimoxazoleAdherence(hivEncounterTypeDictionary.get(value_coded));
                         break;
-                    /*case 7778454:
+                    case 7778844:
                         value_coded = obs.getValueCoded();
                         hivEncType.setWhyPoorFairCotrimoxazoleDrugAdherence(hivEncounterTypeDictionary.get(value_coded));
-                        break;*/
+                        break;
                    case  7778847:
                         value_coded = obs.getValueCoded();
                         cst = new CodedSimpleType();
@@ -366,10 +366,10 @@ public class NDRClinicalDictionary {
                         value_coded = obs.getValueCoded();
                         hivEncType.setINHAdherence(hivEncounterTypeDictionary.get(value_coded));
                         break;
-                    /*case 7778455:
+                    case 7778845:
                         value_coded = obs.getValueCoded();
                         hivEncType.setWhyPoorFairINHDrugAdherence(hivEncounterTypeDictionary.get(value_coded));
-                        break;*/
+                        break;
  /*case 5096:
                         value_datetime = obs.getValueDate();
                         hivEncType.setNextAppointmentDate(getXmlDate(value_datetime));

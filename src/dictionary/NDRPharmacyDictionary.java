@@ -298,9 +298,13 @@ public class NDRPharmacyDictionary {
             String[] spiltCodedName=StringUtils.split(codedName,"/");
             String newStr="";
             for(String ele: spiltCodedName){
-                if(StringUtils.length(ele)<=5 && !StringUtils.equalsIgnoreCase(ele, "INH")){
+                //if(StringUtils.length(ele)<=5 && !StringUtils.equalsIgnoreCase(ele, "INH")){
+                    //newStr+=ele+"/";
+                //}
+                if(arvDrugCodingMapping.containsValue(ele)){
                     newStr+=ele+"/";
                 }
+                
             }
             codedName=newStr;
             /*if (drugName.contains("NEVIRAPINE")) {
@@ -732,10 +736,10 @@ public class NDRPharmacyDictionary {
         List<RegimenType> regimenTypeList = new ArrayList<RegimenType>();
         RegimenType regimenType = null;
         for (model.datapump.DrugOrder order : drugOrderList) {
-            if (isValidARV(order.getConceptStr())) {
+            //if (isValidARV(order.getConceptStr())) {
                 regimenType = createRegimenTypeARV(order);
                 regimenTypeList.add(regimenType);
-            }
+            //}
         }
         return regimenTypeList;
     }

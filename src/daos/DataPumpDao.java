@@ -878,6 +878,7 @@ public class DataPumpDao implements model.datapump.DataAccess {
                 + " GROUP_CONCAT(drug.name SEPARATOR '/') as drug_name,\n"
                 + " orders.start_date as FirstPickupDate, \n"
                 + "orders.discontinued_date as stop_date, \n"
+                + "TIMESTAMPDIFF(DAY,orders.start_date,orders.discontinued_date) as duration, \n"
                 + "drug_order.frequency,\n"
                 + "drug_order.quantity,\n"
                 + "orders.date_created as date_entered,\n"
@@ -1219,7 +1220,7 @@ public class DataPumpDao implements model.datapump.DataAccess {
                     conditionType.setConditionSpecificQuestions(disease);
                     //phamarcyObsList = getObsFromPharmacyForPatient(patientID);
                     //orders = getDrugOrderForPatient(pts.getPatientID(), phamarcyObsList);
-                    ordersOI = getDrugOrderForPatient2(pts.getPatientID());
+                    ordersOI = getDrugOrderForPatientOIs(patientID);
                     ordersARV = getDrugOrderForPatientARVs(pts.getPatientID());
                     oiRegimenTypeList = NDRDictionary.createRegimenTypeListOI(pts,ordersOI);
                     arvRegimenTypeList = NDRDictionary.createRegimenTypeListARV(pts,ordersARV);
@@ -1242,8 +1243,8 @@ public class DataPumpDao implements model.datapump.DataAccess {
                                 artStartDate = ptsRgm.getStartDate();
                             }
                             clinicalObsList = extractClinicalObs(obsList);
-                            if (obsList != null && !obsList.isEmpty()) {
-                                hivEncounterType = NDRDictionary.createHIVEncounter(ele, artStartDate, obsList, null, drugList);
+                            if (clinicalObsList != null && !clinicalObsList.isEmpty()) {
+                                hivEncounterType = NDRDictionary.createHIVEncounter(ele, artStartDate, clinicalObsList, null, drugList);
                                 encounterType.getHIVEncounter().add(hivEncounterType);
                             }
                         }
@@ -1553,8 +1554,18 @@ public class DataPumpDao implements model.datapump.DataAccess {
                 + "	inner join `patient` on(`patient`.`patient_id` = `obs`.`person_id`)\n"
                 + "     inner join `encounter` on(`encounter`.`encounter_id` = `obs`.`encounter_id`)\n"
                 + "     inner join `encounter_provider` on(`encounter_provider`.encounter_id=encounter.encounter_id and encounter.voided=0)\n"
-                + "	where encounter.form_id in(22,14,21,23,20,27) and CAST(encounter.encounter_datetime AS DATE)=? and  encounter.patient_id=? and encounter.voided=0   order by obs.person_id\n"
+                + "	where encounter.form_id in(8,5,3,6,1,2,4) and CAST(encounter.encounter_datetime AS DATE)=? and  encounter.patient_id=? and encounter.voided=0   order by obs.person_id\n"
                 + "     	 ";
+        /*
+          Form Descriptions
+           -Care/ART Card Follow Up - 8
+           -Laboratory Results Form - 5
+           -Laboratory Request Form - 3
+           - Vital Sign Form - 6
+           - Adult Initial Clinical Evaluation Form - 1
+           - Paediatric Initial Clinical Evaluation Form - 2
+           - Contact Tracking and Termination Form - 4
+        */
         PreparedStatement ps = null;
         ResultSet rs = null;
         model.datapump.Obs obs = null;
@@ -1586,9 +1597,10 @@ public class DataPumpDao implements model.datapump.DataAccess {
         // 2 - Paediatric Initial Clinical Evaluation Form
         // 5 - Laboratory Results Form
         // 6 - Vital Signs
-        int[] fidArr = {8, 1, 2, 5, 6};
+        Integer[] fidArr = {8, 1, 2, 5, 6};
+        List<Integer> fidArrList=Arrays.asList(fidArr);
         for (model.datapump.Obs obs : obsList) {
-            if (Arrays.binarySearch(fidArr, obs.getFormID()) != -1) {
+            if (fidArrList.contains(obs.getFormID())) {
                 clinicalObsList.add(obs);
             }
         }
@@ -4019,7 +4031,7 @@ public class DataPumpDao implements model.datapump.DataAccess {
         order.setDrugDose(rs.getString("dose"));
         order.setQuantity(rs.getDouble("quantity"));
         order.setFrequency(rs.getString("frequency"));
-        order.setSingleDoseUnit(rs.getString("unit"));
+        order.setSingleDoseUnit(rs.getString("units"));
         order.setCreator(rs.getInt("creator"));
         order.setDiscontinueReason(rs.getInt("discontinued_reason"));
         order.setDateEntered(rs.getDate("date_created"));
@@ -4257,7 +4269,7 @@ public class DataPumpDao implements model.datapump.DataAccess {
         //order.setRegimenName(rs.getString("regimen"));
         //order.setCode(String.valueOf(rs.getInt("regimen_code")));
         //order.setRegimenLine(rs.getString("regimen_line"));
-        order.setEnteredBy(rs.getString("entered_by"));
+        order.setEnteredBy(rs.getString("creator_id"));
         order.setDateEntered(rs.getDate("date_entered"));
         order.setCreator(rs.getInt("creator_id"));
         return order;
@@ -5732,7 +5744,7 @@ public class DataPumpDao implements model.datapump.DataAccess {
                 + "AND \n"
                 + "patient_identifier.voided=0\n"
                 + "AND\n"
-                + "patient_identifier.identifier_type=5\n"
+                + "patient_identifier.identifier_type=3\n"
                 + "AND\n"
                 + "patient_identifier.identifier is not null\n"
                 + "AND\n"
@@ -5768,6 +5780,8 @@ public class DataPumpDao implements model.datapump.DataAccess {
             ps.setDate(18, convertToSQLDate(endDate));
             ps.setDate(19, convertToSQLDate(startDate));
             ps.setDate(20, convertToSQLDate(endDate));
+            ps.setDate(21, convertToSQLDate(startDate));
+            ps.setDate(22, convertToSQLDate(endDate));
             //ps.setDate(11, convertToSQLDate(startDate));
             //ps.setDate(12, convertToSQLDate(endDate));
             //ps.setDate(13, convertToSQLDate(startDate));
