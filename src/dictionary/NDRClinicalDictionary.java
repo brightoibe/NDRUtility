@@ -355,13 +355,13 @@ public class NDRClinicalDictionary {
                         value_coded = obs.getValueCoded();
                         hivEncType.setWhyPoorFairCotrimoxazoleDrugAdherence(hivEncounterTypeDictionary.get(value_coded));
                         break;
-                   case  7778847:
+                   /*case  7778847:
                         value_coded = obs.getValueCoded();
                         cst = new CodedSimpleType();
                         cst.setCode(hivEncounterTypeDictionary.get(value_coded));
                         cst.setCodeDescTxt("Isoniazid");
                         hivEncType.setINHDose(cst);
-                        break;
+                        break;*/
                     case 7777876:
                         value_coded = obs.getValueCoded();
                         hivEncType.setINHAdherence(hivEncounterTypeDictionary.get(value_coded));

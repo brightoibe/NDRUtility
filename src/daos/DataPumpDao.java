@@ -234,6 +234,8 @@ public class DataPumpDao implements model.datapump.DataAccess {
         propertyMap = getGlobalProperties();
         String datim_id = propertyMap.get("facility_datim_code");
         String default_facility = propertyMap.get("Facility_Name");
+        //datim_id="JvhEpTVkXwyZ";
+        //default_facility="MSH Test Facility";
         String nigeriaqual_id = propertyMap.get("nigeriaqual_id");
         location.setDatimID(datim_id);
         location.setDefaultLoacation(default_facility);

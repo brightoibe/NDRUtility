@@ -286,78 +286,61 @@ public class NDRPharmacyDictionary {
 
     public String codeDrugs(String drugName) {
         drugName = drugName.toUpperCase();
-        String codedName =drugName;
+        String codedName = drugName;
         Set<String> keySet = null;
         if (drugName != null && !drugName.isEmpty()) {
             keySet = arvDrugCodingMapping.keySet();
             for (String key : keySet) {
-                if(StringUtils.contains(key, drugName)){
+                if (StringUtils.contains(key, drugName)) {
                     codedName = StringUtils.replacePattern(codedName, key, arvDrugCodingMapping.get(key));
                 }//codedName = StringUtils.replacePattern(codedName, key, arvDrugCodingMapping.get(key));
-           }
-            String[] spiltCodedName=StringUtils.split(codedName,"/");
-            String newStr="";
-            for(String ele: spiltCodedName){
+            }
+            /*String[] spiltCodedName = StringUtils.split(codedName, "/");
+            String newStr = "";
+            for (String ele : spiltCodedName) {
                 //if(StringUtils.length(ele)<=5 && !StringUtils.equalsIgnoreCase(ele, "INH")){
-                    //newStr+=ele+"/";
+                //newStr+=ele+"/";
                 //}
-                if(arvDrugCodingMapping.containsValue(ele)){
-                    newStr+=ele+"/";
-                }
-                
-            }
-            codedName=newStr;
-            /*if (drugName.contains("NEVIRAPINE")) {
-                codedName += "NVP/";
-            }
-            if (drugName.contains("LAMIVUDINE")) {
-                codedName += "3TC/";
-            }
-            if (drugName.contains("ZIDOVUDINE")) {
-                codedName += "AZT/";
-            }
-            if (drugName.contains("EMTRICITABINE")) {
-                codedName += "FTC/";
-            }
-            if (drugName.contains("TENOFOVIR")) {
-                codedName += "TDF/";
-            }
-            if (drugName.contains("EFAVIRENZ")) {
-                codedName += "EFV/";
-            }
-            if (drugName.contains("ABACAVIR")) {
-                codedName += "ABC/";
-            }
-            if (drugName.contains("ATAZANAVIR")) {
-                codedName += "ATVr/";
-            }
-            if (drugName.contains("KALETRA") || drugName.contains("LOPINAVIR")) {
-                codedName += "LPVr/";
-            }
-            if (drugName.contains("DIDANOSINE")) {
-                codedName += "DDI/";
-            }
-            if (drugName.contains("STAVUDINE")) {
-                codedName += "D4T/";
-            }
-            if (drugName.contains("SAQUINAVIR")) {
-                codedName += "SQVr/";
-            }
-            if (drugName.contains("INDINAVIR")) {
-                codedName += "IDVr/";
-            }
-            if (drugName.contains("NELFINAVIR")) {
-                codedName += "NFVr/";
+                if (arvDrugCodingMapping.containsValue(ele)) {
+                    //for (String key : keySet) {
+                        //if (StringUtils.contains(key, ele)) {
+                            newStr += ele + "/";
+                        //}
+                    }
+
+                //}
+                codedName = newStr;
             }*/
-            if (codedName.endsWith("/")) {
-                codedName = codedName.substring(0, codedName.length() - 1);
+            
+                if (codedName.endsWith("/")) {
+                    codedName = codedName.substring(0, codedName.length() - 1);
+
+                }
 
             }
+        
+            codedName = StringUtils.replacePattern(codedName, "\\s+", "");
+            codedName = StringUtils.trimToEmpty(StringUtils.replacePattern(codedName, "\\(.*?\\)", ""));
+            String[] spiltCodedName = StringUtils.split(codedName, "/");
+            String newStr = "";
+            for (String ele : spiltCodedName) {
+                //if(StringUtils.length(ele)<=5 && !StringUtils.equalsIgnoreCase(ele, "INH")){
+                //newStr+=ele+"/";
+                //}
+                if (arvDrugCodingMapping.containsValue(ele)) {
+                    //for (String key : keySet) {
+                        //if (StringUtils.contains(key, ele)) {
+                            newStr += ele + "/";
+                        //}
+                    }
 
+                //}
+                codedName = newStr;
+            }
+            return sortRegimen(codedName);
         }
-        codedName = StringUtils.replacePattern(codedName, "\\s+", "");
-        return sortRegimen(codedName);
-    }
+
+    
 
     public boolean isPresent(String regimenList, String drugCode) {
         boolean ans = false;
@@ -422,7 +405,7 @@ public class NDRPharmacyDictionary {
         for (String ele : set) {
             //System.out.println("ele: "+ele+" and "+codedDrug);
             if (isEquivalent(codedDrug, ele)) {
-                
+
                 code = mapRegimenToCodeDictionary.get(ele);
                 return code;
             }
@@ -651,7 +634,8 @@ public class NDRPharmacyDictionary {
             regimenCoding = "CTX960";
             regimenTypeCoding = COTRIMOXAZOLE_REGIMEN_TYPE_CODE;
             visitDate = order.getStartDate();
-            stopDate = order.getStopDate();
+            stopDate = calculateRegimenStopDate(visitDate, order.getFrequency());
+            
             pepfarID = order.getPepfarID();
             description = order.getDrugName();
             regimenType = createRegimenType(pepfarID, visitDate, regimenCoding, description, stopDate, regimenTypeCoding);
@@ -660,7 +644,8 @@ public class NDRPharmacyDictionary {
             regimenCoding = "H";
             regimenTypeCoding = INH_REGIMEN_TYPE_CODE;
             visitDate = order.getStartDate();
-            stopDate = order.getStopDate();
+            //stopDate = order.getStopDate();
+            stopDate = calculateRegimenStopDate(visitDate, order.getFrequency());
             pepfarID = order.getPepfarID();
             description = order.getDrugName();
             regimenType = createRegimenType(pepfarID, visitDate, regimenCoding, description, stopDate, regimenTypeCoding);
@@ -690,17 +675,17 @@ public class NDRPharmacyDictionary {
     public RegimenType createRegimenTypeARV(model.datapump.DrugOrder order) throws DatatypeConfigurationException {
         RegimenType regimenType = null;
         String codedDrug = "";
-        String regimenCoding = "",regimenLine="";
-        String drugName=order.getDrugName();
-        regimenCoding=getRegimenCoding(drugName);
-        codedDrug=codeDrugs(drugName);
-        String description=codedDrug;
-        String regimenTypeCoding="ART";
-        String pepfarID=order.getPepfarID();
-        Date visitDate=order.getStartDate();
-        Date stopDate=calculateRegimenStopDate(visitDate, order.getFrequency());
-        regimenType=createRegimenType(pepfarID, visitDate, regimenCoding, description, stopDate, regimenTypeCoding);
-        regimenLine=getRegimenLineCoding(codedDrug);
+        String regimenCoding = "", regimenLine = "";
+        String drugName = order.getDrugName();
+        regimenCoding = getRegimenCoding(drugName);
+        codedDrug = codeDrugs(drugName);
+        String description = codedDrug;
+        String regimenTypeCoding = "ART";
+        String pepfarID = order.getPepfarID();
+        Date visitDate = order.getStartDate();
+        Date stopDate = calculateRegimenStopDate(visitDate, order.getFrequency());
+        regimenType = createRegimenType(pepfarID, visitDate, regimenCoding, description, stopDate, regimenTypeCoding);
+        regimenLine = getRegimenLineCoding(codedDrug);
         regimenType.setPrescribedRegimenLineCode(regimenLine);
         /*
            RegimenType
@@ -737,8 +722,8 @@ public class NDRPharmacyDictionary {
         RegimenType regimenType = null;
         for (model.datapump.DrugOrder order : drugOrderList) {
             //if (isValidARV(order.getConceptStr())) {
-                regimenType = createRegimenTypeARV(order);
-                regimenTypeList.add(regimenType);
+            regimenType = createRegimenTypeARV(order);
+            regimenTypeList.add(regimenType);
             //}
         }
         return regimenTypeList;
